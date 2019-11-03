@@ -3,6 +3,9 @@
 #include <cctype>
 #include <cwctype>
 #include <iostream>
+#include <list>
+#include <utility>
+#include "util.h"
 
 namespace hoops {
 
@@ -157,72 +160,102 @@ bool GumboScraper::FillPlayerMetadata(PlayerMetadata* mutable_player) {
     std::cout << "isempty()\n";
     return false;
   }
-
   std::cout << "there exists " << sel.nodeNum()
             << " findings with such query..\n";
-
   CNode table = sel.nodeAt(0);
+
+  // Peek content of each section.
   auto meta_section = table.find("div #meta");
-  if (meta_section.nodeNum() == 0) {
+  if (meta_section.nodeNum() != 0) {
+    std::cout << "meta_section: "
+              << meta_section.nodeAt(0).text().substr(0, 100) << "\n";
+    FillMetaSection(mutable_player, meta_section.nodeAt(0));
+  } else {
     std::cout << "div #meta was not found.\n";
-    return false;
   }
+
   auto badge_section = table.find("#bling");
-  if (badge_section.nodeNum() == 0) {
+  if (badge_section.nodeNum() != 0) {
+    std::cout << "badge_section: "
+              << badge_section.nodeAt(0).text().substr(0, 100) << "\n";
+  } else {
     std::cout << "ul #bling was not found.\n";
-    return false;
   }
+
   auto college_section = table.find("div .uni_holder");
-  if (college_section.nodeNum() == 0) {
+  if (college_section.nodeNum() != 0) {
+    std::cout << "college_section: "
+              << college_section.nodeAt(0).text().substr(0, 100) << "\n";
+  } else {
     std::cout << "div .uni_holder was not found.\n";
-    return false;
   }
+
   auto stats_section = table.find("div .stats_pullout");
-  if (stats_section.nodeNum() == 0) {
+  if (stats_section.nodeNum() != 0) {
+    std::cout << "stats_section: "
+              << stats_section.nodeAt(0).text().substr(0, 100) << "\n";
+  } else {
     std::cout << "div .stats_pullout was not found.\n";
-    return false;
+  }
+  return true;
+}
+
+CNode GetNodeThatContains(CSelection selection, const std::string& element,
+                          const std::string query) {
+  CSelection label_sel = selection.find(element + ":contains('" + query + "')");
+  if (label_sel.nodeNum() != 0) {
+    return label_sel.nodeAt(0);
+  }
+  std::cout << query << " not found.\n";
+  return CNode();
+}
+
+CNode GetNodeThatContains(CNode node, const std::string& element,
+                          const std::string query) {
+  CSelection label_sel = node.find(element + ":contains('" + query + "')");
+  if (label_sel.nodeNum() != 0) {
+    return label_sel.nodeAt(0);
+  }
+  std::cout << query << " not found.\n";
+  return CNode();
+}
+
+// Ignoring nodes of element tag, get the text of sibilings for a given node
+// (including the node's text).
+std::string GetSibilingTextIgnoring(CNode node, const std::string& tag) {
+  std::string full_text = "";
+  if (!node.valid()) return full_text;
+  CNode sib = node.nextSibling();
+  if (!sib.valid()) {
+    std::cout << "No sibilings...\n";
+    return "";
   }
 
-  std::cout << "meta_section: " << meta_section.nodeAt(0).text().substr(0, 100)
-            << "\n";
-  std::cout << "badge_section: "
-            << badge_section.nodeAt(0).text().substr(0, 100) << "\n";
-  std::cout << "college_section: "
-            << college_section.nodeAt(0).text().substr(0, 100) << "\n";
-  std::cout << "stats_section: "
-            << stats_section.nodeAt(0).text().substr(0, 100) << "\n";
-  FillMetaSection(mutable_player, meta_section.nodeAt(0));
-  // for (int i = 0; i < table.childNum(); ++i) {
-  //   CNode table_section = table.childAt(i);
-  //   if (table_section.tag().empty()) continue;
-  //   std::cout << "-------------- childnum: " << i << " " <<
-  //   table_section.tag()
-  //             << " class " << table_section.attribute("class") << " # "
-  //             << table_section.attribute("id") << "------------\n";
-  //   std::string content = table_section.text();
-  //   std::remove_if(content.begin(), content.end(), isspace);
-  //   std::cout << content << "\n\n";
-  // }
+  for (; sib.valid() && sib.tag() != tag; sib = sib.nextSibling()) {
+    std::string sib_text = sib.text();
+    if (sib_text.empty()) continue;
+    full_text += "<" + sib.tag() + ">" + sib_text + "\n";
+  }
+  return full_text;
+}
 
-  // div #meta
-  // ul #bling
-  // div .uni_holder
-  // div .adblock ad300
-  // div .stats_pullout
+// Separate sibiling text ignoring tags with tag 'tag'.
+std::string TokenizeSibilingTextIgnoring(const std::string& tag, CNode node) {
+  std::list<std::pair<std::string, std::string>> nodes;
+  std::string full_text = "";
+  if (!node.valid()) return full_text;
+  CNode sib = node.nextSibling();
+  if (!sib.valid()) {
+    std::cout << "No sibilings...\n";
+    return "";
+  }
 
-  // auto stats_section = table.find("div.stats_pullout");
-  // if (stats_section.nodeNum() == 0) {
-  //   std::cout << "isempty()\n";
-  //   return false;
-  // }
-
-  // auto part1 = stats_section.nodeAt(0).find("div.p1").nodeAt(0);
-  // auto sections = part1.find("div");
-  // for (int i = 0; i < sections.nodeNum(); ++i) {
-  //   std::cout << sections.nodeAt(i).text() << "\n\n ";
-  // }
-
-  return true;
+  for (; sib.valid() && sib.tag() != tag; sib = sib.nextSibling()) {
+    std::string sib_text = sib.text();
+    if (sib_text.empty()) continue;
+    full_text += "<" + sib.tag() + ">" + sib_text + "\n";
+  }
+  return full_text;
 }
 
 void Parse(CSelection sel) {
@@ -274,9 +307,9 @@ void GumboScraper::FillMetaSection(PlayerMetadata* player, CNode meta_section) {
     return;
   }
   std::vector<std::string> meta_labels = {
-      "Pronunciation", "Position:",    "Shoots:",         "Born:",
-      "College:",      "High School:", "Draft:",          "NBA Debut:",
-      "Hall of Fame:", "Experience:",  "Recruiting Rank:"};
+      "Pronunciation", "Position:",    "Shoots:",          "Born:",
+      "College:",      "High School:", "Draft:",           "NBA Debut:",
+      "Hall of Fame:", "Experience:",  "Recruiting Rank:", "Team:"};
   bool pronounciation_found = false;
   // "Twitter:" is not inside a <strong> tag, found in <a>.
   // "Age:" is not inside a <strong> tag, found in attribute.
@@ -315,36 +348,115 @@ void GumboScraper::FillMetaSection(PlayerMetadata* player, CNode meta_section) {
     std::cout << "No twitter: " << twitter_sel.nodeNum() << "\n";
   }
 
-  std::cout << "Example shoots parse: " << meta_parser_->ParseShoots("  Right")
-            << "\n";
+  // Parse shoots:
+  CNode shoots_node = GetNodeThatContains(strong_sel, "p > strong", "Shoots:");
+  if (shoots_node.valid()) {
+    meta_parser_->GetParseFunction("Shoots")(&shoots_node, player);
+  }
 
-  /*
-  Pronunciation: \kuh-REEM ab-dool juh-BAR\
+  // Parse position:
+  CNode position_node =
+      GetNodeThatContains(strong_sel, "p > strong", "Position:");
+  if (position_node.valid()) {
+    meta_parser_->GetParseFunction("Position")(&position_node, player);
 
-Kareem Abdul-Jabbar ▪ Twitter: kaj33
+    // Get nicknames if they exist. They will be placed right before the
+    // position label. So use that node to get the previous sibiling.
+    if (position_node.parent().prevSibling().valid() &&
+        position_node.parent().prevSibling().prevSibling().valid()) {
+      std::string text =
+          position_node.parent().prevSibling().prevSibling().text();
+      trim_new_line(&text);
+      std::cout << "nickname: " << text << "\n";
+    }
+  }
 
-(born Ferdinand Lewis Alcindor Jr.)
+  // Parse born:
+  CNode born_node = GetNodeThatContains(strong_sel, "p > strong", "Born:");
+  if (born_node.valid()) {
+    meta_parser_->GetParseFunction("Born")(&born_node, player);
+  }
 
-(Lew, Cap, Murdock, Big Fella)
+  // Parse college:
+  CNode college_node =
+      GetNodeThatContains(strong_sel, "p > strong", "College:");
+  if (college_node.valid()) {
+    meta_parser_->GetParseFunction("College")(&college_node, player);
+  } else {
+    std::cout << "No college data.\n";
+  }
 
-Position: Center ▪ Shoots: Right
+  // Parse high school:
+  CNode high_school_node =
+      GetNodeThatContains(strong_sel, "p > strong", "High School:");
+  if (high_school_node.valid()) {
+    meta_parser_->GetParseFunction("High School")(&high_school_node, player);
+  } else {
+    std::cout << "No high school data.\n";
+  }
 
-7-2, 225lb (218cm, 102kg)
+  // Parse rank:
+  CNode rank_node =
+      GetNodeThatContains(strong_sel, "p > strong", "Recruiting Rank:");
+  if (rank_node.valid()) {
+    meta_parser_->GetParseFunction("Recruiting Rank")(&rank_node, player);
+  } else {
+    std::cout << "No recruiting rank data.\n";
+  }
 
-Born: April 16, 1947 (Age: 72-172d) in New York, New York us
+  // Parse NBA Debut:
+  CNode debut_node =
+      GetNodeThatContains(strong_sel, "p > strong", "NBA Debut:");
+  if (debut_node.valid()) {
+    meta_parser_->GetParseFunction("NBA Debut")(&debut_node, player);
+  } else {
+    std::cout << "No debut data.\n";
+  }
 
-College: UCLA
+  // Parse experience:
+  CNode exp_node = GetNodeThatContains(strong_sel, "p > strong", "Experience:");
+  if (exp_node.valid()) {
+    meta_parser_->GetParseFunction("Experience")(&exp_node, player);
+  } else {
+    std::cout << "No experience data.\n";
+  }
 
-High School: Power Memorial in New York, New York
+  // Parse draft:
+  CNode draft_node = GetNodeThatContains(strong_sel, "p > strong", "Draft:");
+  if (draft_node.valid()) {
+    meta_parser_->GetParseFunction("Draft")(&draft_node, player);
+  } else {
+    std::cout << "No draft data.\n";
+  }
 
-Draft: Milwaukee Bucks, 1st round (1st pick, 1st overall), 1969 NBA Draft
+  // Parse physical attributes.
+  CSelection height_sel = info_item.find("div > p > span[itemprop~='height']");
+  if (height_sel.nodeNum() > 0) {
+    CNode height_parent = height_sel.nodeAt(0).parent();
+    if (height_parent.valid()) {
+      meta_parser_->GetParseFunction("Physical")(&height_parent, player);
+    }
+  } else {
+    std::cout << "No physical data.\n";
+  }
 
-NBA Debut: October 18, 1969
+  // Parse pronunciation.
+  CNode pron_node =
+      GetNodeThatContains(strong_sel, "p > strong", "Pronunciation");
+  if (pron_node.valid()) {
+    meta_parser_->GetParseFunction("Pronunciation")(&pron_node, player);
+  } else {
+    std::cout << "No pronunciation data.\n";
+  }
 
-Hall of Fame: Inducted as Player in 1995 (Full List)
-
-
-  */
+  // Parse Hall of Fame.
+  CNode hof_node =
+      GetNodeThatContains(strong_sel, "p > strong", "Hall of Fame:");
+  if (hof_node.valid()) {
+    meta_parser_->GetParseFunction("Hall of Fame")(&hof_node, player);
+  } else {
+    std::cout << "No hall of fame data.\n";
+  }
 }
 
 }  // namespace hoops

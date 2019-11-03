@@ -3,6 +3,7 @@
 
 #include <array>
 #include <string>
+#include <utility>
 
 namespace hoops {
 
@@ -28,8 +29,7 @@ class PlayerMetadata {
     std::string high_school_url;
   } school_info;
 
-  std::array<std::string, 4> school_tags = {"college", "college_url",
-                                            "high_school", "high_school_url"};
+  static const std::array<std::string, 4> school_tags;
 
   struct IDInformation {
     std::string first_name;
@@ -44,10 +44,7 @@ class PlayerMetadata {
     std::string twitter;
   } id_info;
 
-  std::array<std::string, 10> id_tags = {
-      "first_name", "last_name",     "url",           "birth_date",
-      "born",       "born_date_url", "born_home_url", "born_year_url",
-      "legal_name", "twitter"};
+  static const std::array<std::string, 10> id_tags;
 
   struct PhysicalInformation {
     std::string position;
@@ -56,8 +53,7 @@ class PlayerMetadata {
     std::string shoots;
   } physical_info;
 
-  std::array<std::string, 10> physical_tags = {"position", "height", "weight",
-                                               "shoots"};
+  static const std::array<std::string, 4> physical_tags;
 
   struct CareerInformation {
     int start_year;
@@ -73,17 +69,7 @@ class PlayerMetadata {
     bool in_hall_of_fame;
   } career_info;
 
-  std::array<std::string, 11> career_tags = {"start_year",
-                                             "end_year",
-                                             "draft",
-                                             "draft_team_url",
-                                             "draft_year_url",
-                                             "nba_debut",
-                                             "nba_debut_url",
-                                             "recruiting_rank",
-                                             "recruiting_rank_year",
-                                             "recruiting_rank_year_url",
-                                             "in_hall_of_fame"};
+  static const std::array<std::string, 11> career_tags;
 };
 
 }  // namespace hoops

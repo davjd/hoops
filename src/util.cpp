@@ -1,4 +1,6 @@
-#include <string>
+#include "util.h"
+
+#include <algorithm>
 
 namespace hoops {
 
@@ -10,6 +12,12 @@ std::string string_to_lower(const std::string& str) {
       str.begin(), str.end(), std::back_inserter(result),
       [](unsigned char c) -> unsigned char { return std::tolower(c); });
   return result;
+}
+
+void trim_new_line(std::string* str) {
+  str->erase(std::remove_if(str->begin(), str->end(),
+                            [](unsigned char c) { return c == '\n'; }),
+             str->end());
 }
 
 }  // namespace hoops

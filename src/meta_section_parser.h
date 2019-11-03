@@ -1,6 +1,7 @@
 #ifndef META_SECTION_PARSER_H_
 #define META_SECTION_PARSER_H_
 
+#include <array>
 #include <functional>
 #include <string>
 #include <unordered_map>
@@ -9,12 +10,14 @@
 class CNode;
 
 namespace hoops {
+class PlayerMetadata;
 
 class MetaSectionParser {
  public:
+  using ParseFunctor = std::function<void(CNode*, PlayerMetadata*)>;
   ~MetaSectionParser();
   MetaSectionParser();
-  bool Parse(CNode* node);
+  bool Parse(CNode* node, const std::string& tag);
 
   std::string ParsePronunciation(std::string text);
   std::string ParsePosition(std::string text);
@@ -27,6 +30,11 @@ class MetaSectionParser {
   std::string ParseHallofFame(std::string text);
   std::string ParseExperience(std::string text);
   std::string ParseRecruitingRank(std::string text);
+  void ParseTag(const std::string& tag);
+  ParseFunctor GetParseFunction(const std::string& tag);
+
+  static const std::array<std::pair<std::string, ParseFunctor>, 12>
+      kParseFunctions;
 
  private:
   std::vector<std::string> meta_labels;

@@ -8,7 +8,7 @@
 #include "env_namespace.h"
 #include "gumbo_scraper.h"
 #include "player_extractor.h"
-#include "util.hpp"
+#include "util.h"
 
 namespace hoops {
 

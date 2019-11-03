@@ -6,11 +6,28 @@
 
 namespace hoops {
 
+const std::array<std::string, 10> PlayerMetadata::id_tags = {
+    "first_name",    "last_name",     "url",           "birth_date", "born",
+    "born_date_url", "born_home_url", "born_year_url", "legal_name", "twitter"};
+const std::array<std::string, 4> PlayerMetadata::school_tags = {
+    "college", "college_url", "high_school", "high_school_url"};
+const std::array<std::string, 4> PlayerMetadata::physical_tags = {
+    "position", "height", "weight", "shoots"};
+const std::array<std::string, 11> PlayerMetadata::career_tags = {
+    "start_year",
+    "end_year",
+    "draft",
+    "draft_team_url",
+    "draft_year_url",
+    "nba_debut",
+    "nba_debut_url",
+    "recruiting_rank",
+    "recruiting_rank_year",
+    "recruiting_rank_year_url",
+    "in_hall_of_fame"};
+
 void PlayerMetadata::AddAttribute(const std::string& attribute,
                                   const std::string& value) {
-  // We could add on to this by having an array of pair<string, function> where
-  // function defines how to set the value. Removes redundant search for if else
-  // set value component.
   if (std::find(school_tags.begin(), school_tags.end(), attribute) !=
       school_tags.end()) {
     AddSchoolInformation(attribute, value);
@@ -46,6 +63,7 @@ void PlayerMetadata::AddSchoolInformation(const std::string& attribute,
     std::cout << "Couldn't add attribute: " << attribute << "\n";
   }
 }
+
 void PlayerMetadata::AddIDInformation(const std::string& attribute,
                                       const std::string& value) {
   if (attribute == "first_name") {
@@ -72,6 +90,7 @@ void PlayerMetadata::AddIDInformation(const std::string& attribute,
     std::cout << "Couldn't add attribute: " << attribute << "\n";
   }
 }
+
 void PlayerMetadata::AddPhysicalInformation(const std::string& attribute,
                                             const std::string& value) {
   if (attribute == "height") {
@@ -85,6 +104,7 @@ void PlayerMetadata::AddPhysicalInformation(const std::string& attribute,
     std::cout << "Couldn't add attribute: " << attribute << "\n";
   }
 }
+
 void PlayerMetadata::AddCareerInformation(const std::string& attribute,
                                           const std::string& value) {
   if (attribute == "start_year") {
