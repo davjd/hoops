@@ -139,6 +139,47 @@ void PlayerMetadata::AddCareerInformation(const std::string& attribute,
   }
 }
 
+void PlayerMetadata::AddAchievement(const std::string& achievement) {
+  career_info.achievements.push_back(achievement);
+}
+
+PlayerMetadata::CareerInformation::CareerStats
+PlayerMetadata::GetCareerStats() {
+  return career_info.career_stats;
+}
+
+void PlayerMetadata::AddCareerStat(const std::string& stat_type, float value) {
+  // TODO: This style of setting values isn't scalable. Maybe instead implement
+  // adapters that translate html tags to internal representations of those
+  // tags.
+  if (stat_type == "G") {
+    career_info.career_stats.total_games = value;
+  } else if (stat_type == "PTS") {
+    career_info.career_stats.pts = value;
+  } else if (stat_type == "TRB") {
+    career_info.career_stats.trb = value;
+  } else if (stat_type == "AST") {
+    career_info.career_stats.ast = value;
+  } else if (stat_type == "FG%") {
+    career_info.career_stats.fgp = value;
+  } else if (stat_type == "FG3%") {
+    career_info.career_stats.fg3p = value;
+  } else if (stat_type == "FT%") {
+    career_info.career_stats.ftp = value;
+  } else if (stat_type == "eFG%") {
+    career_info.career_stats.efgp = value;
+  } else if (stat_type == "PER") {
+    career_info.career_stats.per = value;
+  } else if (stat_type == "WS") {
+    career_info.career_stats.ws = value;
+  }
+}
+
+void PlayerMetadata::AddTeamInfo(
+    PlayerMetadata::CareerInformation::TeamInfo team_info) {
+  career_info.team_info.push_back(team_info);
+}
+
 std::string PlayerMetadata::GetFullName() {
   return id_info.first_name + " " + id_info.last_name;
 }

@@ -2,26 +2,15 @@
 #define PLAYER_METADATA_H_
 
 #include <array>
+#include <list>
 #include <string>
 #include <utility>
+#include <vector>
 
 namespace hoops {
 
 class PlayerMetadata {
  public:
-  void AddAttribute(const std::string& attribute, const std::string& value);
-  std::string GetFullUrl();
-  std::string GetFullName();
-  static std::string GetFirstName(const std::string& full_name);
-  static std::string GetLastName(const std::string& full_name);
-  void AddSchoolInformation(const std::string& attribute,
-                            const std::string& value);
-  void AddIDInformation(const std::string& attribute, const std::string& value);
-  void AddPhysicalInformation(const std::string& attribute,
-                              const std::string& value);
-  void AddCareerInformation(const std::string& attribute,
-                            const std::string& value);
-
   struct SchoolInformation {
     std::string college;
     std::string college_url;
@@ -67,9 +56,56 @@ class PlayerMetadata {
     int recruiting_rank_year;
     std::string recruiting_rank_year_url;
     bool in_hall_of_fame;
+    std::vector<std::string> achievements;
+
+    struct CareerStats {
+      int total_games;
+
+      // average <stat> per game for their career.
+      float pts;
+      float trb;
+      float ast;
+
+      // career stat percentage.
+      float fgp;
+      float fg3p;
+      float ftp;
+      float efgp;
+
+      // shares.
+      float per;
+      int ws;
+    } career_stats;
+
+    struct TeamInfo {
+      // TODO: for now, team_name will have the full parsed name. meaning it'll
+      // have the team name and the year. we can parse it to isolate the team
+      // name and year onto different member variables. This would require maybe
+      // creating new class for this.
+      std::string team_name;
+      std::string link;
+      int number;
+    };
+    std::list<TeamInfo> team_info;
   } career_info;
 
   static const std::array<std::string, 11> career_tags;
+  void AddAttribute(const std::string& attribute, const std::string& value);
+  std::string GetFullUrl();
+  std::string GetFullName();
+  static std::string GetFirstName(const std::string& full_name);
+  static std::string GetLastName(const std::string& full_name);
+  void AddSchoolInformation(const std::string& attribute,
+                            const std::string& value);
+  void AddIDInformation(const std::string& attribute, const std::string& value);
+  void AddPhysicalInformation(const std::string& attribute,
+                              const std::string& value);
+  void AddCareerInformation(const std::string& attribute,
+                            const std::string& value);
+  void AddAchievement(const std::string& achievement);
+  CareerInformation::CareerStats GetCareerStats();
+  void AddCareerStat(const std::string& stat_type, float value);
+  void AddTeamInfo(PlayerMetadata::CareerInformation::TeamInfo team_info);
 };
 
 }  // namespace hoops

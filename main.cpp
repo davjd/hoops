@@ -33,7 +33,7 @@ int main() {
   }
   std::cout << "Finished: " << env->Alphabet() << "\n\n";
 
-  auto player = env->GetPlayer("Arron Afflalo");
+  auto player = env->GetPlayer("Kareem Abdul-Jabbar");
   std::cout << "Getting content for " << player.GetFullName() << " with url "
             << player.GetFullUrl() << "\n";
   auto page =

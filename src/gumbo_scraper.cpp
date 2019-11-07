@@ -4,6 +4,7 @@
 #include <cwctype>
 #include <iostream>
 #include <list>
+#include <string>
 #include <utility>
 #include "util.h"
 
@@ -178,14 +179,16 @@ bool GumboScraper::FillPlayerMetadata(PlayerMetadata* mutable_player) {
   if (badge_section.nodeNum() != 0) {
     std::cout << "badge_section: "
               << badge_section.nodeAt(0).text().substr(0, 100) << "\n";
+    FillBadgeData(mutable_player, badge_section.nodeAt(0));
   } else {
     std::cout << "ul #bling was not found.\n";
   }
 
-  auto college_section = table.find("div .uni_holder");
-  if (college_section.nodeNum() != 0) {
-    std::cout << "college_section: "
-              << college_section.nodeAt(0).text().substr(0, 100) << "\n";
+  auto uniform_section = table.find("div .uni_holder");
+  if (uniform_section.nodeNum() != 0) {
+    std::cout << "uniform_section: "
+              << uniform_section.nodeAt(0).text().substr(0, 100) << "\n";
+    FillUniformData(mutable_player, uniform_section.nodeAt(0));
   } else {
     std::cout << "div .uni_holder was not found.\n";
   }
@@ -194,6 +197,7 @@ bool GumboScraper::FillPlayerMetadata(PlayerMetadata* mutable_player) {
   if (stats_section.nodeNum() != 0) {
     std::cout << "stats_section: "
               << stats_section.nodeAt(0).text().substr(0, 100) << "\n";
+    FillStatsData(mutable_player, stats_section.nodeAt(0));
   } else {
     std::cout << "div .stats_pullout was not found.\n";
   }
@@ -239,56 +243,17 @@ std::string GetSibilingTextIgnoring(CNode node, const std::string& tag) {
   return full_text;
 }
 
-// Separate sibiling text ignoring tags with tag 'tag'.
-std::string TokenizeSibilingTextIgnoring(const std::string& tag, CNode node) {
-  std::list<std::pair<std::string, std::string>> nodes;
-  std::string full_text = "";
-  if (!node.valid()) return full_text;
-  CNode sib = node.nextSibling();
-  if (!sib.valid()) {
-    std::cout << "No sibilings...\n";
-    return "";
-  }
-
-  for (; sib.valid() && sib.tag() != tag; sib = sib.nextSibling()) {
-    std::string sib_text = sib.text();
-    if (sib_text.empty()) continue;
-    full_text += "<" + sib.tag() + ">" + sib_text + "\n";
-  }
-  return full_text;
-}
-
-void Parse(CSelection sel) {
-  std::cout << "parsing..\n";
-  const std::string label = "Recruiting Rank:";
-  CSelection label_sel = sel.find("p > strong:contains('" + label + "')");
-  if (label_sel.nodeNum() == 0) {
-    std::cout << label << " not found.\n";
-    return;
-  }
-  CNode label_node = label_sel.nodeAt(0);
-  std::cout << label << "<" << label_node.tag() << ">"
-            << ": ";
-  CNode sib = label_node.nextSibling();
-  if (sib.valid()) {
-    for (; sib.valid() && sib.tag() != "strong"; sib = sib.nextSibling()) {
-      std::string sib_text = sib.text();
-      if (sib_text.empty()) continue;
-      std::cout << "<" << sib.tag() << ">" << sib_text << "\n";
-    }
-  } else {
-    std::cout << "No sibs...\n";
-  }
-}
-
 void GumboScraper::FillMetaSection(PlayerMetadata* player, CNode meta_section) {
   // Get media and person sections.
   CSelection media_sel = meta_section.find("div .media-item > img");
+
+  // Extract the image source.
   if (media_sel.nodeNum() != 0 &&
       !media_sel.nodeAt(0).attribute("src").empty()) {
-    // Extract the image source.
     std::cout << "src: " << media_sel.nodeAt(0).attribute("src") << "\n";
   }
+
+  // Get the info section containing the metadata.
   CSelection person_sel = meta_section.find("div[itemtype*='Person']");
   if (person_sel.nodeNum() == 0) return;
   CNode info_item = person_sel.nodeAt(0);
@@ -306,48 +271,11 @@ void GumboScraper::FillMetaSection(PlayerMetadata* player, CNode meta_section) {
   if (strong_sel.nodeNum() == 0) {
     return;
   }
+
   std::vector<std::string> meta_labels = {
       "Pronunciation", "Position:",    "Shoots:",          "Born:",
       "College:",      "High School:", "Draft:",           "NBA Debut:",
       "Hall of Fame:", "Experience:",  "Recruiting Rank:", "Team:"};
-  bool pronounciation_found = false;
-  // "Twitter:" is not inside a <strong> tag, found in <a>.
-  // "Age:" is not inside a <strong> tag, found in attribute.
-  for (const std::string& label : meta_labels) {
-    CSelection label_sel =
-        strong_sel.find("p > strong:contains('" + label + "')");
-    if (label_sel.nodeNum() == 0) {
-      std::cout << label << " not found.\n";
-      continue;
-    }
-    CNode label_node = label_sel.nodeAt(0);
-    std::cout << label << "<" << label_node.tag() << ">"
-              << ": ";
-    CNode sib = label_node.nextSibling();
-    if (sib.valid()) {
-      for (; sib.valid() && sib.tag() != "strong"; sib = sib.nextSibling()) {
-        std::string sib_text = sib.text();
-        if (sib_text.empty()) continue;
-        std::cout << "<" << sib.tag() << ">" << sib_text << "\n";
-      }
-      if (label == meta_labels[0]) {
-        pronounciation_found = true;
-      }
-    } else {
-      std::cout << "No sibs...\n";
-    }
-  }
-
-  CNode full_name_node = strong_sel.nodeAt(pronounciation_found ? 1 : 0);
-
-  std::cout << "full_name: " << full_name_node.text() << "\n";
-  CSelection twitter_sel = full_name_node.parent().find("a[href*='twitter']");
-  if (twitter_sel.nodeNum() > 1) {
-    std::cout << "twitter: " << twitter_sel.nodeAt(1).text() << "\n";
-  } else {
-    std::cout << "No twitter: " << twitter_sel.nodeNum() << "\n";
-  }
-
   // Parse shoots:
   CNode shoots_node = GetNodeThatContains(strong_sel, "p > strong", "Shoots:");
   if (shoots_node.valid()) {
@@ -441,12 +369,25 @@ void GumboScraper::FillMetaSection(PlayerMetadata* player, CNode meta_section) {
   }
 
   // Parse pronunciation.
+  bool pronunciation_found = false;
   CNode pron_node =
       GetNodeThatContains(strong_sel, "p > strong", "Pronunciation");
   if (pron_node.valid()) {
+    // Whether the pronunciation label is found determines where the full name
+    // and twitter section are, so we'll store this information for later.
+    pronunciation_found = true;
     meta_parser_->GetParseFunction("Pronunciation")(&pron_node, player);
   } else {
     std::cout << "No pronunciation data.\n";
+  }
+
+  CNode full_name_node = strong_sel.nodeAt(pronunciation_found ? 1 : 0);
+  std::cout << "full_name: " << full_name_node.text() << "\n";
+  CSelection twitter_sel = full_name_node.parent().find("a[href*='twitter']");
+  if (twitter_sel.nodeNum() > 1) {
+    std::cout << "twitter: " << twitter_sel.nodeAt(1).text() << "\n";
+  } else {
+    std::cout << "No twitter: " << twitter_sel.nodeNum() << "\n";
   }
 
   // Parse Hall of Fame.
@@ -459,4 +400,51 @@ void GumboScraper::FillMetaSection(PlayerMetadata* player, CNode meta_section) {
   }
 }
 
+void GumboScraper::FillBadgeData(PlayerMetadata* player, CNode badge_section) {
+  CSelection lis = badge_section.find("ul > li");
+  if (lis.nodeNum() == 0) return;
+  for (int i = 0; i < lis.nodeNum(); ++i) {
+    const std::string achievement = lis.nodeAt(i).text();
+    if (achievement.empty()) continue;
+    std::cout << "li: " << achievement << "\n";
+    player->AddAchievement(achievement);
+  }
+}
+
+void GumboScraper::FillUniformData(PlayerMetadata* mutable_player,
+                                   CNode badge_section) {
+  CSelection links = badge_section.find("div > a");
+  if (links.nodeNum() == 0) return;
+  for (int i = 0; i < links.nodeNum(); ++i) {
+    const std::string team = links.nodeAt(i).attribute("data-tip");
+    const std::string link = links.nodeAt(i).attribute("href");
+    std::string number = links.nodeAt(i).text();
+    if (team.empty() || link.empty() || number.empty()) continue;
+    std::cout << link << " : " << team << " : " << std::stoi(number) << "\n";
+    PlayerMetadata::CareerInformation::TeamInfo team_info = {team, link,
+                                                             std::stoi(number)};
+    mutable_player->AddTeamInfo(team_info);
+  }
+}
+
+void GumboScraper::FillStatsData(PlayerMetadata* mutable_player,
+                                 CNode badge_section) {
+  CSelection divs = badge_section.find("div > div[class^=p]");
+  for (int i = 0; i < divs.nodeNum(); ++i) {
+    CNode div_node = divs.nodeAt(i);
+    CSelection h4_sel = div_node.find("h4.poptip");
+    std::cout << divs.nodeAt(i).attribute("class") << ":\n";
+    for (int i = 0; i < h4_sel.nodeNum(); ++i) {
+      const std::string attribute = h4_sel.nodeAt(i).text();
+      if (attribute.empty() && !h4_sel.nodeAt(i).nextSibling().valid() &&
+          !h4_sel.nodeAt(i).nextSibling().nextSibling().valid() &&
+          !h4_sel.nodeAt(i).nextSibling().nextSibling().nextSibling().valid())
+        continue;
+      float value = std::stof(
+          h4_sel.nodeAt(i).nextSibling().nextSibling().nextSibling().text());
+      std::cout << attribute << ": " << value << "\n";
+      mutable_player->AddCareerStat(attribute, value);
+    }
+  }
+}
 }  // namespace hoops

@@ -3,15 +3,15 @@
 
 #include <string>
 
+#include <memory>
 #include "Document.h"
 #include "Node.h"
 #include "bball_page.h"
+#include "meta_section_parser.h"
 #include "page_reader.h"
 #include "player_extractor.h"
 #include "player_metadata.h"
 #include "scraper_wrapper.h"
-#include "meta_section_parser.h"
-#include <memory>
 
 class CDocument;
 
@@ -36,12 +36,15 @@ class GumboScraper : public ScraperWrapper<CDocument>, public PlayerExtractor {
   PlayerMetadata GetPlayer(const std::string& player_name) override;
   bool FillPlayerMetadata(PlayerMetadata* mutable_player) override;
   void FillMetaSection(PlayerMetadata* player, CNode selection);
+  void FillBadgeData(PlayerMetadata* player, CNode badge_section);
+  void FillUniformData(PlayerMetadata* player, CNode badge_section);
+  void FillStatsData(PlayerMetadata* player, CNode badge_section);
 
   BBallReferencePage::PageType page_type() { return page_type_; }
 
   BBallReferencePage::PageType page_type_;
 
-  private:
+ private:
   std::unique_ptr<MetaSectionParser> meta_parser_;
 };
 
