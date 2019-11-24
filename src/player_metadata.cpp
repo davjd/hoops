@@ -3,6 +3,7 @@
 
 #include <algorithm>
 #include <iostream>
+#include "util.h"
 
 namespace hoops {
 
@@ -31,19 +32,14 @@ void PlayerMetadata::AddAttribute(const std::string& attribute,
   if (std::find(school_tags.begin(), school_tags.end(), attribute) !=
       school_tags.end()) {
     AddSchoolInformation(attribute, value);
-  }
-  if (std::find(id_tags.begin(), id_tags.end(), attribute) != id_tags.end()) {
+  } else if (std::find(id_tags.begin(), id_tags.end(), attribute) !=
+             id_tags.end()) {
     AddIDInformation(attribute, value);
-  }
-  if (std::find(id_tags.begin(), id_tags.end(), attribute) != id_tags.end()) {
-    AddIDInformation(attribute, value);
-  }
-  if (std::find(physical_tags.begin(), physical_tags.end(), attribute) !=
-      physical_tags.end()) {
+  } else if (std::find(physical_tags.begin(), physical_tags.end(), attribute) !=
+             physical_tags.end()) {
     AddPhysicalInformation(attribute, value);
-  }
-  if (std::find(career_tags.begin(), career_tags.end(), attribute) !=
-      career_tags.end()) {
+  } else if (std::find(career_tags.begin(), career_tags.end(), attribute) !=
+             career_tags.end()) {
     AddCareerInformation(attribute, value);
   }
 }
@@ -86,6 +82,8 @@ void PlayerMetadata::AddIDInformation(const std::string& attribute,
     id_info.legal_name = value;
   } else if (attribute == "twitter") {
     id_info.twitter = value;
+  } else if (attribute == "pronunciation") {
+    id_info.pronunciation = value;
   } else {
     std::cout << "Couldn't add attribute: " << attribute << "\n";
   }
@@ -97,7 +95,7 @@ void PlayerMetadata::AddPhysicalInformation(const std::string& attribute,
     physical_info.height = value;
   } else if (attribute == "weight") {
     if (attribute.empty()) return;
-    physical_info.weight = std::stoi(value);
+    physical_info.weight = int_or_negative(value);
   } else if (attribute == "shoots") {
     physical_info.shoots = value;
   } else {
@@ -109,10 +107,10 @@ void PlayerMetadata::AddCareerInformation(const std::string& attribute,
                                           const std::string& value) {
   if (attribute == "start_year") {
     if (attribute.empty()) return;
-    career_info.start_year = std::stoi(value);
+    career_info.start_year = int_or_negative(value);
   } else if (attribute == "end_year") {
     if (attribute.empty()) return;
-    career_info.end_year = std::stoi(value);
+    career_info.end_year = int_or_negative(value);
   } else if (attribute == "draft") {
     career_info.draft = value;
   } else if (attribute == "draft_team_url") {
@@ -125,10 +123,10 @@ void PlayerMetadata::AddCareerInformation(const std::string& attribute,
     career_info.nba_debut_url = value;
   } else if (attribute == "recruiting_rank") {
     if (attribute.empty()) return;
-    career_info.recruiting_rank = std::stoi(value);
+    career_info.recruiting_rank = int_or_negative(value);
   } else if (attribute == "recruiting_rank_year") {
     if (attribute.empty()) return;
-    career_info.recruiting_rank_year = std::stoi(value);
+    career_info.recruiting_rank_year = int_or_negative(value);
   } else if (attribute == "recruiting_rank_year_url") {
     career_info.recruiting_rank_year_url = value;
   } else if (attribute == "in_hall_of_fame") {
@@ -180,7 +178,12 @@ void PlayerMetadata::AddTeamInfo(
   career_info.team_info.push_back(team_info);
 }
 
-std::string PlayerMetadata::GetFullName() {
+void PlayerMetadata::AddSeason(
+    PlayerMetadata::CareerInformation::CareerSeason season) {
+  career_info.seasons.push_back(season);
+}
+
+std::string PlayerMetadata::GetFullName() const {
   return id_info.first_name + " " + id_info.last_name;
 }
 
@@ -197,7 +200,7 @@ std::string PlayerMetadata::GetLastName(const std::string& full_name) {
   return full_name.substr(space_pos);
 }
 
-std::string PlayerMetadata::GetFullUrl() {
+std::string PlayerMetadata::GetFullUrl() const {
   return env::url::kBaseUrl + id_info.url;
 }
 

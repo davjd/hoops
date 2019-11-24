@@ -1,8 +1,10 @@
 #include "hoops_env.h"
 #include <cctype>
+#include <fstream>
 #include <iostream>
 #include <memory>
 #include <random>
+#include <string>
 #include <thread>
 #include <unordered_map>
 #include "env_namespace.h"
@@ -34,8 +36,11 @@ bool HoopsEnvironment::LoadPlayerIndices(bool delay) {
     const std::string url = env::PlayersIndexUrl(letter);
     if (loader_->LoadIndexPage(url)) {
       if (delay) std::this_thread::sleep_for(std::chrono::seconds(3));
+      std::cout << env::filename::IndexFileName(url)
+                << " was loaded succesfully.\n";
     } else {
-      std::cout << url << " was not loaded succesfully.\n";
+      std::cout << env::filename::IndexFileName(url)
+                << " was not loaded succesfully.\n";
     }
   }
   return true;
@@ -64,7 +69,7 @@ bool HoopsEnvironment::LoadPlayerProfiles(bool delay) {
     if (!scraper_wrapper) return false;
     for (auto& player : scraper_wrapper->GetPlayers()) {
       // Grab specific url for this player's profile page.
-      const std::string url = env::PlayerProfileUrl(player.id_info.url);
+      std::string url = env::PlayerProfileUrl(player.id_info.url);
       if (url.empty()) return false;
 
       // Delay by a couple of seconds if we need to make a request.
@@ -81,10 +86,12 @@ bool HoopsEnvironment::LoadPlayerProfiles(bool delay) {
       // TODO: player_name_to_letter->emplace(player.) could instead linearly
       // look for it.
       if (loader_->LoadProfilePage(url)) {
-        std::cout << url << " was loaded successfully.\n";
+        std::cout << env::filename::ProfileFileName(url)
+                  << " was loaded succesfully.\n";
         if (delay_s) std::this_thread::sleep_for(std::chrono::seconds(delay_s));
       } else {
-        std::cout << url << " was not loaded succesfully.\n";
+        std::cout << env::filename::ProfileFileName(url)
+                  << " was not loaded succesfully.\n";
       }
     }
   }
@@ -93,7 +100,7 @@ bool HoopsEnvironment::LoadPlayerProfiles(bool delay) {
 
 // Get the profile page for this page. This page will contain metadata about
 // the given player.
-std::string HoopsEnvironment::GetPage(PlayerMetadata& player) {
+std::string HoopsEnvironment::GetPage(const PlayerMetadata& player) {
   const std::string url = env::PlayerProfileUrl(player);
   if (!Loader::DoesProfileUrlExist(url)) {
     return "";
@@ -173,6 +180,75 @@ Loader* HoopsEnvironment::loader() { return loader_.get(); }
 
 const std::string HoopsEnvironment::Alphabet() {
   return kAlphabet.substr(0, 1);
+}
+
+// For some reason the html table body is commented out before being rendered.
+// Therefore, we must remove the comment symbol.
+void HoopsEnvironment::FixPage(const PlayerMetadata& player) {
+  FixPage(env::filename::ProfileFileName(player.GetFullUrl()));
+}
+
+void HoopsEnvironment::FixPage(const std::string& file_name) {
+  // Testing with Kelenna Azubuike.
+  // Fixing page and then scraping it. Shouldn't need to reset the file because
+  // checking has been already added. But copy will be inside of tmp.txt.
+  std::string page = Loader::GetPage(file_name);
+  if (page.empty()) {
+    std::cout << "empty file.\n";
+    return;
+  }
+  // Skip first table body.
+  size_t begin_pos = page.find("table_outer_container");
+  begin_pos = page.find("table_outer_container", begin_pos + 1);
+  size_t end_pos;
+  int count = 0;
+  while (begin_pos != std::string::npos) {
+    if (page.substr(begin_pos - 20, 4) != "<!--") {
+      std::cout << "Commented out already...closing.\n";
+      break;
+    }
+    end_pos = page.find("-->", begin_pos);
+    if (end_pos == std::string::npos) {
+      std::cout << "Couldn't find end.\n";
+      break;
+    }
+    // std::cout << "\n-------begin--------\n" << page.substr(begin_pos - 20,
+    // 4); std::cout << "\n-------end--------\n" << page.substr(end_pos, 3);
+    page.erase(begin_pos - 20, 4);
+    // The positions needs to be modified, since we deleted 4 characters.
+    page.erase(end_pos - 4, 3);
+    begin_pos = page.find("table_outer_container", begin_pos);
+    count += 1;
+  }
+  std::fstream file(file_name, std::fstream::out | std::fstream::trunc);
+  file << page;
+  std::cout << "count: " << count << "\n";
+}
+
+// table_outer_container: where the contain exists. move up one line and delete
+// the line. the first div that contains this isn't actually commented out, so
+// need to skip the first one.
+// <!-- fs_btf_2 -->
+
+bool HoopsEnvironment::RenameFile(const std::string& file_name) {
+  size_t period_pos = file_name.find_last_of('.');
+  if (period_pos == std::string::npos) {
+    return false;
+  }
+  std::string new_file_name = file_name.substr(0, ++period_pos) + "html";
+  return rename(file_name.c_str(), new_file_name.c_str()) == 0;
+}
+
+std::string HoopsEnvironment::OldFileName(const std::string& file_name) {
+  size_t period_pos = file_name.find_last_of('.');
+  if (period_pos == std::string::npos) {
+    return "";
+  }
+  return file_name.substr(0, ++period_pos) + "txt";
+}
+
+bool HoopsEnvironment::IsUsingOldName(const std::string& file_name) {
+  return file_name.find(".txt") != std::string::npos;
 }
 
 const std::string HoopsEnvironment::kAlphabet = "abcdefghijklmnopqrstuvwxyz";

@@ -9,17 +9,17 @@ namespace filename {
 
 std::string IndexFileName(const std::string& url) {
   return kIndexDirectory + std::to_string(std::hash<std::string>{}(url)) +
-         ".txt";
+         ".html";
 }
 
 std::string ProfileFileName(const std::string& url) {
   return kIndexDirectory + kProfileDirectory + GetPlayerLetter(url) + "/" +
-         std::to_string(std::hash<std::string>{}(url)) + ".txt";
+         std::to_string(std::hash<std::string>{}(url)) + ".html";
 }
 
 std::string ProfileFileName(const std::string& url, const char& letter) {
   return kIndexDirectory + kProfileDirectory + std::string(1, letter) + "/" +
-         std::to_string(std::hash<std::string>{}(url)) + ".txt";
+         std::to_string(std::hash<std::string>{}(url)) + ".html";
 }
 
 }  // namespace filename
@@ -38,7 +38,7 @@ std::string PlayerProfileUrl(const std::string& url) {
 }
 
 // Returns url of page that contains profile of given player.
-std::string PlayerProfileUrl(PlayerMetadata& player) {
+std::string PlayerProfileUrl(const PlayerMetadata& player) {
   if (player.id_info.url.find(".html") == std::string::npos) return "";
   return url::kBaseUrl + player.id_info.url;
 }

@@ -18,8 +18,17 @@ set(HEADER_FILES src/util.cpp
                  src/page_reader.h
                  src/player_extractor.h
                  src/player_metadata.cpp
+                 src/adapters/attribute_adapter.cpp
+                 src/adapters/advanced_adapter.cpp
+                 src/adapters/per_36_adapter.cpp
+                 src/adapters/per_100_adapter.cpp
+                 src/adapters/per_game_adapter.cpp
+                 src/adapters/play_adapter.cpp
+                 src/adapters/shooting_adapter.cpp
+                 src/adapters/totals_adapter.cpp
                  src/profile_loader.cpp
                  src/index_loader.cpp
+                 src/stats_adapters.cpp
                  src/meta_section_parser.cpp
                  src/scraper_wrapper.cpp
                  src/gumbo_scraper.cpp
@@ -42,6 +51,3 @@ include_directories(~/git/gumbo-query/src)
 include_directories(/usr/local/Cellar/gumbo-parser/0.10.1/include)
 include_directories(${CURL_INCLUDE_DIR})
 target_link_libraries(hoops gumboparser gumboquery ${CURL_LIBRARIES})
-
-
-# add_executable (curl-demo convert.cpp)

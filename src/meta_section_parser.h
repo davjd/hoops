@@ -38,8 +38,6 @@ class MetaSectionParser {
 
  private:
   std::vector<std::string> meta_labels;
-  std::unordered_map<std::string, std::function<std::string(std::string)>>
-      parse_map;
   static const std::string kPronunciationTag;
   static const std::string kPositionTag;
   static const std::string kShootsTag;

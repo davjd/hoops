@@ -14,7 +14,8 @@ const std::array<std::pair<std::string, MetaSectionParser::ParseFunctor>, 12>
           [](CNode* node, PlayerMetadata* mutable_player) {
             if (!node->valid()) return;
             CNode sib = node->nextSibling();
-            if (!sib.valid()) return;
+            if (!sib.valid() || sib.text().empty()) return;
+            mutable_player->AddAttribute("pronunciation", sib.text());
             std::cout << "pronunciation: " << sib.text() << "\n";
           }},
          {"Position",
@@ -211,9 +212,7 @@ const std::array<std::pair<std::string, MetaSectionParser::ParseFunctor>, 12>
 
 MetaSectionParser::~MetaSectionParser() {}
 
-MetaSectionParser::MetaSectionParser() {
-  parse_map = {{kPronunciationTag, [&](const std::string) { return ""; }}};
-}
+MetaSectionParser::MetaSectionParser() {}
 
 MetaSectionParser::ParseFunctor MetaSectionParser::GetParseFunction(
     const std::string& tag) {

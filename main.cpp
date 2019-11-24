@@ -33,16 +33,20 @@ int main() {
   }
   std::cout << "Finished: " << env->Alphabet() << "\n\n";
 
-  auto player = env->GetPlayer("Kareem Abdul-Jabbar");
+  auto player = env->GetPlayer("Carmelo Anthony");
   std::cout << "Getting content for " << player.GetFullName() << " with url "
             << player.GetFullUrl() << "\n";
   auto page =
       new hoops::BBallReferencePage(env->GetPage(player), player.GetFullUrl());
 
-  std::cout << page->GetPageType() << "\n";
+  // std::cout << page->GetPageType() << "\n";
   auto g_scraper = static_cast<hoops::GumboScraper*>(env->scraper());
   g_scraper->SetPage(page);
-  if (!g_scraper->FillPlayerMetadata(&player)) {
+  // if (!g_scraper->FillPlayerMetadata(&player)) {
+  //   std::cout << "Error filling metadata.\n";
+  // }
+
+  if (!g_scraper->FillNumbers(&player)) {
     std::cout << "Error filling metadata.\n";
   }
   std::cout << "file: "

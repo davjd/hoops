@@ -1,4 +1,8 @@
 #include "gumbo_scraper.h"
+
+#include "adapters/attribute_adapter.h"
+#include "util.h"
+
 #include <algorithm>
 #include <cctype>
 #include <cwctype>
@@ -6,12 +10,12 @@
 #include <list>
 #include <string>
 #include <utility>
-#include "util.h"
 
 namespace hoops {
 
 GumboScraper::GumboScraper(CDocument* scraper)
-    : meta_parser_(std::make_unique<MetaSectionParser>()) {
+    : meta_parser_(std::make_unique<MetaSectionParser>()),
+      adapters_(std::make_unique<StatsAdapters>()) {
   set_scraper(scraper);
 }
 
@@ -447,4 +451,105 @@ void GumboScraper::FillStatsData(PlayerMetadata* mutable_player,
     }
   }
 }
+
+bool GumboScraper::FillNumbers(PlayerMetadata* mutable_player) {
+  if (page_type() != BBallReferencePage::PageType::kProfilePage) {
+    std::cout << "incorrect page type.\n";
+    return false;
+  }
+
+  // Get all the nodes that are table wrappers.
+  CSelection wrapper_sel = scraper_->find("div.table_wrapper");
+  if (wrapper_sel.nodeNum() == 0) {
+    std::cout << "Couldn't find table wrappers.\n";
+    return false;
+  }
+  std::cout << "there exists " << wrapper_sel.nodeNum() << " table wrapper.\n";
+  // CSelection section_sel = sel.nodeAt(0).find("div.section_heading > h2");
+  // if (section_sel.nodeNum() == 0) return false;
+  // std::string section_header = section_sel.nodeAt(0).text();
+  // if (section_header.empty()) return false;
+  // if (section_header[0] == ' ') {
+  //   section_header = section_header.substr(1);
+  // }
+
+  // std::cout << section_header << "\n";
+  // Set the player that will be modified by the adapters.
+  // adapters_->SetPlayer(mutable_player);
+  // auto adapter = adapters_->GetAdapter(section_header);
+  // if (adapter == nullptr) return false;
+  // adapter->AddSeason();
+  // if (adapter != nullptr) {
+  //   adapter->AddAttribute("Pos", "Center");
+  //   std::cout << "modified position: "
+  //             << mutable_player->career_info.per_game_seasons.back().position
+  //             << "\n";
+  // }
+
+  // Go through every table wrapper and get the different kinds of stats.
+  for (int i = 0; i < wrapper_sel.nodeNum(); ++i) {
+    // Get the kind of stat line this is (what section we're looking at).
+    CSelection section_sel =
+        wrapper_sel.nodeAt(i).find("div.section_heading > h2");
+    if (section_sel.nodeNum() == 0) continue;
+    CNode section_node = section_sel.nodeAt(0);
+
+    // Clean the section header text if needed.
+    std::string section_header = section_node.text();
+    if (section_header.empty()) continue;
+    if (section_header[0] == ' ') {
+      section_header = section_header.substr(1);
+    }
+
+    // We can use this text to get the adapter. e.g:
+    // auto adapter = adapters_->GetAdapter(section_header);
+    // if (section_header != "Per Game") continue;
+    std::cout << section_header << "\n";
+
+    // We got the header, now use the table to find the table rows with each
+    // season stat line.
+    CNode table_node = wrapper_sel.nodeAt(i);
+    std::cout << "table-stat: " << table_node.attribute("id") << "\n";
+
+    // TODO: There are sections that don't follow this format, so we'll need to
+    // take care of those instances too.
+    CSelection table_row_sel = table_node.find(
+        "div.table_outer_container > div.overthrow > table.row_summable > "
+        "tbody > tr");
+    if (table_row_sel.nodeNum() == 0) {
+      std::cout << "Couldn't find table rows with season stats.\n";
+      continue;
+    } else {
+      std::cout << "found multiple table rows.\n";
+    }
+
+    // Go through each row, as it will have the statline for a season.
+    for (int i = 0; i < 1 && i < table_row_sel.nodeNum(); ++i) {
+      auto row_node = table_row_sel.nodeAt(i);
+      // Table header will have the season for this stat line.
+      CSelection header_sel = row_node.find("th > a");
+      if (header_sel.nodeNum() == 0) continue;
+      std::cout << header_sel.nodeAt(0).text() << "-------------\n";
+
+      // Get all the different stats for this season.
+      CSelection stat_sel = row_node.find("td");
+      for (int j = 0; j < stat_sel.nodeNum(); ++j) {
+        const std::string stat = stat_sel.nodeAt(j).attribute("data-stat");
+        if (stat.empty()) {
+          std::cout << "Empty stat.\n";
+          continue;
+        }
+        std::cout << stat << "\n";
+      }
+    }
+
+    //
+    // stats_adapters.find(section_header).AddSeason()
+    // std::cout << i << ": " << sel.nodeAt(0).text().substr(0, 200) << "\n";
+  }
+  return true;
+}
+
+// div.table_wrapper table_controls has full box outline of table.
+// div.section_heading has header of table.
 }  // namespace hoops

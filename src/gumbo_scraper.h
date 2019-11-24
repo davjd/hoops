@@ -12,6 +12,7 @@
 #include "player_extractor.h"
 #include "player_metadata.h"
 #include "scraper_wrapper.h"
+#include "stats_adapters.h"
 
 class CDocument;
 
@@ -35,10 +36,11 @@ class GumboScraper : public ScraperWrapper<CDocument>, public PlayerExtractor {
   std::vector<PlayerMetadata> GetPlayers() override;
   PlayerMetadata GetPlayer(const std::string& player_name) override;
   bool FillPlayerMetadata(PlayerMetadata* mutable_player) override;
-  void FillMetaSection(PlayerMetadata* player, CNode selection);
-  void FillBadgeData(PlayerMetadata* player, CNode badge_section);
-  void FillUniformData(PlayerMetadata* player, CNode badge_section);
-  void FillStatsData(PlayerMetadata* player, CNode badge_section);
+  void FillMetaSection(PlayerMetadata* mutable_player, CNode selection);
+  void FillBadgeData(PlayerMetadata* mutable_player, CNode badge_section);
+  void FillUniformData(PlayerMetadata* mutable_player, CNode badge_section);
+  void FillStatsData(PlayerMetadata* mutable_player, CNode badge_section);
+  bool FillNumbers(PlayerMetadata* mutable_player);
 
   BBallReferencePage::PageType page_type() { return page_type_; }
 
@@ -46,6 +48,8 @@ class GumboScraper : public ScraperWrapper<CDocument>, public PlayerExtractor {
 
  private:
   std::unique_ptr<MetaSectionParser> meta_parser_;
+  std::unique_ptr<StatsAdapters> adapters_;
+
 };
 
 }  // namespace hoops

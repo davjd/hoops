@@ -32,7 +32,7 @@ std::string PlayersIndexUrl(const char& letter);
 std::string PlayerProfileUrl(const std::string& url);
 
 // Returns url of page that contains profile of given player.
-std::string PlayerProfileUrl(PlayerMetadata& player);
+std::string PlayerProfileUrl(const PlayerMetadata& player);
 
 // Get the letter that this player's directory contains. Usually would be used
 // to find which directory this player belongs to.
