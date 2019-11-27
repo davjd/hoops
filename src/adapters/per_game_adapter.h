@@ -8,10 +8,11 @@ namespace hoops {
 class PlayerMetadata;
 
 // Adapter for "Per Game" table.
-class PerGameAdapter : public AttributeAdapter {
+class PerGameAdapter : public virtual AttributeAdapter {
  public:
   PerGameAdapter(PlayerMetadata* mutable_player)
       : AttributeAdapter(mutable_player) {}
+  ~PerGameAdapter() {}
   PerGameAdapter() = default;
   void AddAttribute(const std::string& attribute, std::string value) override;
   void AddSeason() override;

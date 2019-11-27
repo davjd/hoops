@@ -175,12 +175,7 @@ void PlayerMetadata::AddCareerStat(const std::string& stat_type, float value) {
 
 void PlayerMetadata::AddTeamInfo(
     PlayerMetadata::CareerInformation::TeamInfo team_info) {
-  career_info.team_info.push_back(team_info);
-}
-
-void PlayerMetadata::AddSeason(
-    PlayerMetadata::CareerInformation::CareerSeason season) {
-  career_info.seasons.push_back(season);
+  career_info.teams_info.push_back(team_info);
 }
 
 std::string PlayerMetadata::GetFullName() const {

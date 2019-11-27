@@ -8,10 +8,11 @@ namespace hoops {
 class PlayerMetadata;
 
 // Adapter for "Per 100 Poss" table.
-class Per100Adapter : public AttributeAdapter {
+class Per100Adapter : public virtual AttributeAdapter {
  public:
   Per100Adapter(PlayerMetadata* mutable_player)
       : AttributeAdapter(mutable_player) {}
+      ~Per100Adapter() {}
   Per100Adapter() = default;
   void AddAttribute(const std::string& attribute, std::string value) override;
   void AddSeason() override;

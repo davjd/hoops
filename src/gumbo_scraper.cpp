@@ -464,27 +464,10 @@ bool GumboScraper::FillNumbers(PlayerMetadata* mutable_player) {
     std::cout << "Couldn't find table wrappers.\n";
     return false;
   }
-  std::cout << "there exists " << wrapper_sel.nodeNum() << " table wrapper.\n";
-  // CSelection section_sel = sel.nodeAt(0).find("div.section_heading > h2");
-  // if (section_sel.nodeNum() == 0) return false;
-  // std::string section_header = section_sel.nodeAt(0).text();
-  // if (section_header.empty()) return false;
-  // if (section_header[0] == ' ') {
-  //   section_header = section_header.substr(1);
-  // }
+  std::cout << "there exists " << wrapper_sel.nodeNum() << " table wrappers.\n";
 
-  // std::cout << section_header << "\n";
-  // Set the player that will be modified by the adapters.
-  // adapters_->SetPlayer(mutable_player);
-  // auto adapter = adapters_->GetAdapter(section_header);
-  // if (adapter == nullptr) return false;
-  // adapter->AddSeason();
-  // if (adapter != nullptr) {
-  //   adapter->AddAttribute("Pos", "Center");
-  //   std::cout << "modified position: "
-  //             << mutable_player->career_info.per_game_seasons.back().position
-  //             << "\n";
-  // }
+  // Before we use the adapters, we must give it a player that we're modifying.
+  adapters_->SetPlayer(mutable_player);
 
   // Go through every table wrapper and get the different kinds of stats.
   for (int i = 0; i < wrapper_sel.nodeNum(); ++i) {
@@ -502,8 +485,11 @@ bool GumboScraper::FillNumbers(PlayerMetadata* mutable_player) {
     }
 
     // We can use this text to get the adapter. e.g:
-    // auto adapter = adapters_->GetAdapter(section_header);
-    // if (section_header != "Per Game") continue;
+    auto adapter = adapters_->GetAdapter(section_header);
+    if (adapter == nullptr) {
+      std::cout << section_header << " has no adapter.\n";
+      continue;
+    }
     std::cout << section_header << "\n";
 
     // We got the header, now use the table to find the table rows with each
@@ -524,12 +510,16 @@ bool GumboScraper::FillNumbers(PlayerMetadata* mutable_player) {
     }
 
     // Go through each row, as it will have the statline for a season.
+    // For testing purposes, we'll only add the first season.
     for (int i = 0; i < 1 && i < table_row_sel.nodeNum(); ++i) {
       auto row_node = table_row_sel.nodeAt(i);
       // Table header will have the season for this stat line.
       CSelection header_sel = row_node.find("th > a");
       if (header_sel.nodeNum() == 0) continue;
-      std::cout << header_sel.nodeAt(0).text() << "-------------\n";
+
+      // We have the season here, so add new one then fill it.
+      std::cout << "Adding season " << header_sel.nodeAt(0).text() << ".\n";
+      adapter->AddSeason();
 
       // Get all the different stats for this season.
       CSelection stat_sel = row_node.find("td");
@@ -539,17 +529,12 @@ bool GumboScraper::FillNumbers(PlayerMetadata* mutable_player) {
           std::cout << "Empty stat.\n";
           continue;
         }
-        std::cout << stat << "\n";
+        std::cout << "Filling " << stat << "\n";
+        adapter->AddAttribute(stat, stat_sel.nodeAt(j).text());
       }
     }
-
-    //
-    // stats_adapters.find(section_header).AddSeason()
-    // std::cout << i << ": " << sel.nodeAt(0).text().substr(0, 200) << "\n";
   }
   return true;
 }
 
-// div.table_wrapper table_controls has full box outline of table.
-// div.section_heading has header of table.
 }  // namespace hoops

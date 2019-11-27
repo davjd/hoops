@@ -23,6 +23,7 @@ set(HEADER_FILES src/util.cpp
                  src/adapters/per_36_adapter.cpp
                  src/adapters/per_100_adapter.cpp
                  src/adapters/per_game_adapter.cpp
+                 src/adapters/per_game_playoffs_adapter.cpp
                  src/adapters/play_adapter.cpp
                  src/adapters/shooting_adapter.cpp
                  src/adapters/totals_adapter.cpp

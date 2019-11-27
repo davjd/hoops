@@ -8,10 +8,11 @@ namespace hoops {
 class PlayerMetadata;
 
 // Adapter for "Advanced" table.
-class AdvancedAdapter : public AttributeAdapter {
+class AdvancedAdapter : public virtual AttributeAdapter {
  public:
   AdvancedAdapter(PlayerMetadata* mutable_player)
       : AttributeAdapter(mutable_player) {}
+  ~AdvancedAdapter() {}
   AdvancedAdapter() = default;
   void AddAttribute(const std::string& attribute, std::string value) override;
   void AddSeason() override;
