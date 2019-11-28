@@ -19,7 +19,7 @@ class StatsAdapters {
   void SetPlayer(PlayerMetadata* mutable_player);
 
   static const std::array<
-      std::pair<std::string, std::unique_ptr<AttributeAdapter> >, 2>
+      std::pair<std::string, std::unique_ptr<AttributeAdapter> >, 15>
       kAttributeAdapters;
 };
 }  // namespace hoops

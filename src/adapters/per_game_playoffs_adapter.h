@@ -14,6 +14,7 @@ class PerGamePlayoffsAdapter : public virtual PerGameAdapter {
       : PerGameAdapter(mutable_player) {}
   ~PerGamePlayoffsAdapter() {}
   PerGamePlayoffsAdapter() = default;
+  void AddAttribute(const std::string& attribute, std::string value) override;
   void AddSeason() override;
 };
 

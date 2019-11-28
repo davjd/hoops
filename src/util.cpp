@@ -28,10 +28,10 @@ bool is_number(const std::string& word) {
 }
 
 float float_or_negative(const std::string& word) {
-  if (word.empty() || !is_number(word)) {
-    return -1;
+  if (!word.empty() && word.find('.') != std::string::npos) {
+    return std::stof(word);
   }
-  return std::stof(word);
+  return -1;
 }
 
 int int_or_negative(const std::string& word) {

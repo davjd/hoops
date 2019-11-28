@@ -7,82 +7,81 @@
 
 namespace hoops {
 
-void PlayerAdapter::AddAttribute(const std::string& attribute,
+void PlayAdapter::AddAttribute(const std::string& attribute,
                                  std::string value) {
   // TODO: Update this adapter with correct member variables (including last
   // two).
-  if (player_->career_info.per_game_seasons.empty()) return;
+  if (player_->career_info.play_seasons.empty()) return;
   if (attribute == "Season") {
-    player_->career_info.per_game_seasons.back().season_info.season = value;
+    player_->career_info.play_seasons.back().season_info.season = value;
   } else if (attribute == "age") {
-    player_->career_info.per_game_seasons.back().season_info.age =
+    player_->career_info.play_seasons.back().season_info.age =
         int_or_negative(value);
   } else if (attribute == "team_id") {
-    player_->career_info.per_game_seasons.back().season_info.team = value;
+    player_->career_info.play_seasons.back().season_info.team = value;
   } else if (attribute == "lg_id") {
-    player_->career_info.per_game_seasons.back().season_info.league = value;
+    player_->career_info.play_seasons.back().season_info.league = value;
   } else if (attribute == "pos") {
-    player_->career_info.per_game_seasons.back().season_info.position = value;
+    player_->career_info.play_seasons.back().season_info.position = value;
   } else if (attribute == "g") {
-    player_->career_info.per_game_seasons.back().games =
-        float_or_negative(value);
+    player_->career_info.play_seasons.back().games = float_or_negative(value);
   } else if (attribute == "mp") {
-    player_->career_info.per_game_seasons.back().minutes_played =
+    player_->career_info.play_seasons.back().minutes_played =
         float_or_negative(value);
   } else if (attribute == "pct_1") {
-    player_->career_info.per_game_seasons.back().field_goals_made =
+    player_->career_info.play_seasons.back().point_guard_percentage =
         float_or_negative(value);
   } else if (attribute == "pct_2") {
-    player_->career_info.per_game_seasons.back().field_goals_attempt =
+    player_->career_info.play_seasons.back().shooting_guard_percentage =
         float_or_negative(value);
   } else if (attribute == "pct_3") {
-    player_->career_info.per_game_seasons.back().field_goal_percentage =
+    player_->career_info.play_seasons.back().small_forward_percentage =
         float_or_negative(value);
   } else if (attribute == "pct_4") {
-    player_->career_info.per_game_seasons.back().three_points_made =
+    player_->career_info.play_seasons.back().power_forward_percentage =
         float_or_negative(value);
   } else if (attribute == "pct_5") {
-    player_->career_info.per_game_seasons.back().three_points_attempt =
+    player_->career_info.play_seasons.back().center_percentage =
         float_or_negative(value);
   } else if (attribute == "plus_minus_on") {
-    player_->career_info.per_game_seasons.back().three_points_percentage =
+    player_->career_info.play_seasons.back().plus_minus_on =
         float_or_negative(value);
   } else if (attribute == "plus_minus_net") {
-    player_->career_info.per_game_seasons.back().two_points_made =
+    player_->career_info.play_seasons.back().plus_minus_net =
         float_or_negative(value);
   } else if (attribute == "tov_bad_pass") {
-    player_->career_info.per_game_seasons.back().two_points_attempt =
+    player_->career_info.play_seasons.back().bad_pass =
         float_or_negative(value);
   } else if (attribute == "tov_lost_ball") {
-    player_->career_info.per_game_seasons.back().two_points_percentage =
+    player_->career_info.play_seasons.back().lost_ball =
         float_or_negative(value);
   } else if (attribute == "fouls_shooting") {
-    player_->career_info.per_game_seasons.back().free_throws_made =
+    player_->career_info.play_seasons.back().shooting_fouls =
         float_or_negative(value);
   } else if (attribute == "fouls_offensive") {
-    player_->career_info.per_game_seasons.back().free_throws_attempt =
+    player_->career_info.play_seasons.back().offensive_fouls =
         float_or_negative(value);
   } else if (attribute == "drawn_shooting") {
-    player_->career_info.per_game_seasons.back().free_throws_percentage =
+    player_->career_info.play_seasons.back().shooting_fouls_drawn =
         float_or_negative(value);
   } else if (attribute == "drawn_offensive") {
-    player_->career_info.per_game_seasons.back().offensive_rebounds =
+    player_->career_info.play_seasons.back().offensive_fouls_drawn =
         float_or_negative(value);
   } else if (attribute == "astd_pts") {
-    player_->career_info.per_game_seasons.back().defensive_rebounds =
+    player_->career_info.play_seasons.back().assisted_points =
         float_or_negative(value);
   } else if (attribute == "and1s") {
-    player_->career_info.per_game_seasons.back().total_rebounds =
+    player_->career_info.play_seasons.back().and_ones =
         float_or_negative(value);
   } else if (attribute == "own_shots_blk") {
-    player_->career_info.per_game_seasons.back().assists =
+    player_->career_info.play_seasons.back().blocked_attempt =
         float_or_negative(value);
   }
 }
 
-void PlayerAdapter::AddSeason() {
-  player_->career_info.per_game_seasons.push_back(
-      PlayerMetadata::CareerInformation::PerGameStatLine());
+void PlayAdapter::AddSeason() {
+  player_->career_info.play_seasons.push_back(
+      PlayerMetadata::CareerInformation::PlayStatLine());
 }
 
 }  // namespace hoops

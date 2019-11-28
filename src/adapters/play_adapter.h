@@ -8,12 +8,12 @@ namespace hoops {
 class PlayerMetadata;
 
 // Adapter for "Play-by-Play" table.
-class PlayerAdapter : public virtual AttributeAdapter {
+class PlayAdapter : public virtual AttributeAdapter {
  public:
-  PlayerAdapter(PlayerMetadata* mutable_player)
+  PlayAdapter(PlayerMetadata* mutable_player)
       : AttributeAdapter(mutable_player) {}
-  ~PlayerAdapter() {}
-  PlayerAdapter() = default;
+  ~PlayAdapter() {}
+  PlayAdapter() = default;
   void AddAttribute(const std::string& attribute, std::string value) override;
   void AddSeason() override;
 };

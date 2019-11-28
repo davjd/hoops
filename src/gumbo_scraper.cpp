@@ -511,7 +511,7 @@ bool GumboScraper::FillNumbers(PlayerMetadata* mutable_player) {
 
     // Go through each row, as it will have the statline for a season.
     // For testing purposes, we'll only add the first season.
-    for (int i = 0; i < 1 && i < table_row_sel.nodeNum(); ++i) {
+    for (int i = 0; i < table_row_sel.nodeNum(); ++i) {
       auto row_node = table_row_sel.nodeAt(i);
       // Table header will have the season for this stat line.
       CSelection header_sel = row_node.find("th > a");
@@ -529,11 +529,23 @@ bool GumboScraper::FillNumbers(PlayerMetadata* mutable_player) {
           std::cout << "Empty stat.\n";
           continue;
         }
-        std::cout << "Filling " << stat << "\n";
         adapter->AddAttribute(stat, stat_sel.nodeAt(j).text());
       }
     }
   }
+
+  // Example of how data could be used:
+  float total = 0;
+  std::for_each(
+      mutable_player->career_info.per_game_seasons.begin(),
+      mutable_player->career_info.per_game_seasons.end(),
+      [&total](PlayerMetadata::CareerInformation::PerGameStatLine& stat_line) {
+        total += stat_line.points;
+      });
+
+  std::cout << "career points average: "
+            << (total / mutable_player->career_info.per_game_seasons.size())
+            << "\n";
   return true;
 }
 

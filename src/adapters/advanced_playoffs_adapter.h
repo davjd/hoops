@@ -7,13 +7,14 @@ namespace hoops {
 
 class PlayerMetadata;
 
-// Adapter for "Advanced" table.
+// Adapter for "Advanced" playoffs table.
 class AdvancedPlayoffsAdapter : public virtual AdvancedAdapter {
  public:
   AdvancedPlayoffsAdapter(PlayerMetadata* mutable_player)
       : AdvancedAdapter(mutable_player) {}
   ~AdvancedPlayoffsAdapter() {}
   AdvancedPlayoffsAdapter() = default;
+  void AddAttribute(const std::string& attribute, std::string value) override;
   void AddSeason() override;
 };
 
