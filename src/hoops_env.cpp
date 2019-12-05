@@ -189,14 +189,12 @@ void HoopsEnvironment::FixPage(const PlayerMetadata& player) {
 }
 
 void HoopsEnvironment::FixPage(const std::string& file_name) {
-  // Testing with Kelenna Azubuike.
-  // Fixing page and then scraping it. Shouldn't need to reset the file because
-  // checking has been already added. But copy will be inside of tmp.txt.
   std::string page = Loader::GetPage(file_name);
   if (page.empty()) {
     std::cout << "empty file.\n";
     return;
   }
+
   // Skip first table body.
   size_t begin_pos = page.find("table_outer_container");
   begin_pos = page.find("table_outer_container", begin_pos + 1);
@@ -212,10 +210,7 @@ void HoopsEnvironment::FixPage(const std::string& file_name) {
       std::cout << "Couldn't find end.\n";
       break;
     }
-    // std::cout << "\n-------begin--------\n" << page.substr(begin_pos - 20,
-    // 4); std::cout << "\n-------end--------\n" << page.substr(end_pos, 3);
     page.erase(begin_pos - 20, 4);
-    // The positions needs to be modified, since we deleted 4 characters.
     page.erase(end_pos - 4, 3);
     begin_pos = page.find("table_outer_container", begin_pos);
     count += 1;
@@ -224,11 +219,6 @@ void HoopsEnvironment::FixPage(const std::string& file_name) {
   file << page;
   std::cout << "count: " << count << "\n";
 }
-
-// table_outer_container: where the contain exists. move up one line and delete
-// the line. the first div that contains this isn't actually commented out, so
-// need to skip the first one.
-// <!-- fs_btf_2 -->
 
 bool HoopsEnvironment::RenameFile(const std::string& file_name) {
   size_t period_pos = file_name.find_last_of('.');

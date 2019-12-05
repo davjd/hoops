@@ -13,16 +13,6 @@
 #include "Document.h"
 #include "Node.h"
 
-// Will tokenize html text, being able to isolate text and tags of sequential
-// html nodes. Will make it easier to parse html text.
-class Tokenizer {
- public:
-  Tokenizer() {}
-  std::string NextTag();
-  std::string NextText();
-  void MoveToSibiling();
-};
-
 int main() {
   auto env =
       std::make_unique<hoops::HoopsEnvironment>(new hoops::GumboScraper());
@@ -38,13 +28,11 @@ int main() {
             << player.GetFullUrl() << "\n";
   auto page =
       new hoops::BBallReferencePage(env->GetPage(player), player.GetFullUrl());
-
-  // std::cout << page->GetPageType() << "\n";
   auto g_scraper = static_cast<hoops::GumboScraper*>(env->scraper());
   g_scraper->SetPage(page);
-  // if (!g_scraper->FillPlayerMetadata(&player)) {
-  //   std::cout << "Error filling metadata.\n";
-  // }
+  if (!g_scraper->FillPlayerMetadata(&player)) {
+    std::cout << "Error filling metadata.\n";
+  }
 
   if (!g_scraper->FillNumbers(&player)) {
     std::cout << "Error filling metadata.\n";

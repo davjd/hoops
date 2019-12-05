@@ -7,28 +7,35 @@
 
 namespace hoops {
 
-const std::array<std::string, 10> PlayerMetadata::id_tags = {
-    "first_name",    "last_name",     "url",           "birth_date", "born",
-    "born_date_url", "born_home_url", "born_year_url", "legal_name", "twitter"};
+const std::array<std::string, 12> PlayerMetadata::id_tags = {
+    "first_name", "last_name",     "url",           "birth_date",
+    "born",       "born_date_url", "born_home_url", "born_year_url",
+    "legal_name", "twitter",       "nickname",      "img_url"};
 const std::array<std::string, 4> PlayerMetadata::school_tags = {
     "college", "college_url", "high_school", "high_school_url"};
 const std::array<std::string, 4> PlayerMetadata::physical_tags = {
     "position", "height", "weight", "shoots"};
-const std::array<std::string, 11> PlayerMetadata::career_tags = {
+const std::array<std::string, 16> PlayerMetadata::career_tags = {
     "start_year",
     "end_year",
     "draft",
     "draft_team_url",
     "draft_year_url",
+    "draft_team",
+    "draft_year",
     "nba_debut",
     "nba_debut_url",
     "recruiting_rank",
     "recruiting_rank_year",
     "recruiting_rank_year_url",
-    "in_hall_of_fame"};
+    "in_hall_of_fame",
+    "hall_of_fame",
+    "hall_of_fame_url",
+    "experience"};
 
 void PlayerMetadata::AddAttribute(const std::string& attribute,
                                   const std::string& value) {
+  std::cout << "Adding " << attribute << " with " << value << "\n";
   if (std::find(school_tags.begin(), school_tags.end(), attribute) !=
       school_tags.end()) {
     AddSchoolInformation(attribute, value);
@@ -46,7 +53,6 @@ void PlayerMetadata::AddAttribute(const std::string& attribute,
 
 void PlayerMetadata::AddSchoolInformation(const std::string& attribute,
                                           const std::string& value) {
-  std::cout << "Adding " << attribute << "with " << value << "\n";
   if (attribute == "college") {
     school_info.college = value;
   } else if (attribute == "college_url") {
@@ -70,8 +76,8 @@ void PlayerMetadata::AddIDInformation(const std::string& attribute,
     id_info.url = value;
   } else if (attribute == "birth_date") {
     id_info.birth_date = value;
-  } else if (attribute == "born") {
-    id_info.born = value;
+  } else if (attribute == "birth_location") {
+    id_info.birth_location = value;
   } else if (attribute == "born_date_url") {
     id_info.born_date_url = value;
   } else if (attribute == "born_home_url") {
@@ -84,6 +90,10 @@ void PlayerMetadata::AddIDInformation(const std::string& attribute,
     id_info.twitter = value;
   } else if (attribute == "pronunciation") {
     id_info.pronunciation = value;
+  } else if (attribute == "nickname") {
+    id_info.pronunciation = value;
+  } else if (attribute == "img_url") {
+    id_info.img_url = value;
   } else {
     std::cout << "Couldn't add attribute: " << attribute << "\n";
   }
@@ -91,11 +101,12 @@ void PlayerMetadata::AddIDInformation(const std::string& attribute,
 
 void PlayerMetadata::AddPhysicalInformation(const std::string& attribute,
                                             const std::string& value) {
-  if (attribute == "height") {
+  if (attribute == "position") {
+    physical_info.position = value;
+  } else if (attribute == "height") {
     physical_info.height = value;
   } else if (attribute == "weight") {
-    if (attribute.empty()) return;
-    physical_info.weight = int_or_negative(value);
+    physical_info.weight = value;
   } else if (attribute == "shoots") {
     physical_info.shoots = value;
   } else {
@@ -117,6 +128,10 @@ void PlayerMetadata::AddCareerInformation(const std::string& attribute,
     career_info.draft_team_url = value;
   } else if (attribute == "draft_year_url") {
     career_info.draft_year_url = value;
+  } else if (attribute == "draft_team") {
+    career_info.draft_team_url = value;
+  } else if (attribute == "draft_year") {
+    career_info.draft_team_url = value;
   } else if (attribute == "nba_debut") {
     career_info.nba_debut = value;
   } else if (attribute == "nba_debut_url") {
@@ -132,6 +147,12 @@ void PlayerMetadata::AddCareerInformation(const std::string& attribute,
   } else if (attribute == "in_hall_of_fame") {
     // TODO : this attribute might not be needed.
     career_info.in_hall_of_fame = value == "y" ? true : false;
+  } else if (attribute == "hall_of_fame") {
+    career_info.hall_of_fame = value;
+  } else if (attribute == "hall_of_fame_url") {
+    career_info.hall_of_fame_url = value;
+  } else if (attribute == "experience") {
+    career_info.experience = value;
   } else {
     std::cout << "Couldn't add attribute: " << attribute << "\n";
   }
@@ -150,6 +171,7 @@ void PlayerMetadata::AddCareerStat(const std::string& stat_type, float value) {
   // TODO: This style of setting values isn't scalable. Maybe instead implement
   // adapters that translate html tags to internal representations of those
   // tags.
+  std::cout << "Adding " << stat_type << " with " << value << "\n";
   if (stat_type == "G") {
     career_info.career_stats.total_games = value;
   } else if (stat_type == "PTS") {

@@ -34,6 +34,8 @@ set(HEADER_FILES src/util.cpp
                  src/adapters/totals_adapter.cpp
                  src/adapters/totals_playoffs_adapter.cpp
                  src/adapters/totals_all_star_adapter.cpp
+                 src/adapters/game_highs_adapter.cpp
+                 src/adapters/game_highs_playoffs_adapter.cpp
                  src/profile_loader.cpp
                  src/index_loader.cpp
                  src/stats_adapters.cpp

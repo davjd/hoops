@@ -25,21 +25,23 @@ class PlayerMetadata {
     std::string last_name;
     std::string url;
     std::string birth_date;
-    std::string born;
+    std::string birth_location;
     std::string born_date_url;
     std::string born_home_url;
     std::string born_year_url;
     std::string legal_name;
     std::string twitter;
     std::string pronunciation;
+    std::string img_url;
+    std::string nickname;
   } id_info;
 
-  static const std::array<std::string, 10> id_tags;
+  static const std::array<std::string, 12> id_tags;
 
   struct PhysicalInformation {
     std::string position;
     std::string height;
-    int weight;
+    std::string weight;
     std::string shoots;
   } physical_info;
 
@@ -57,6 +59,9 @@ class PlayerMetadata {
     int recruiting_rank_year;
     std::string recruiting_rank_year_url;
     bool in_hall_of_fame;
+    std::string hall_of_fame;
+    std::string hall_of_fame_url;
+    std::string experience;
     std::vector<std::string> achievements;
 
     // Has relevant information for a season played by a player.
@@ -264,6 +269,39 @@ class PlayerMetadata {
     std::list<PlayStatLine> play_seasons;
     std::list<PlayStatLine> play_playoff_seasons;
 
+    // Stats for "Game Highs" stat line.
+    struct GameHighsStatLine {
+      SeasonInformation season_info;
+      int games;
+      int games_started;
+      std::string minutes_played;
+      int field_goals_made;
+      int field_goals_attempt;
+      int field_goal_percentage;
+      int three_points_made;
+      int three_points_attempt;
+      int three_points_percentage;
+      int two_points_made;
+      int two_points_attempt;
+      int two_points_percentage;
+      int free_throws_made;
+      int free_throws_attempt;
+      int free_throws_percentage;
+      int offensive_rebounds;
+      int defensive_rebounds;
+      int total_rebounds;
+      int assists;
+      int steals;
+      int blocks;
+      int turnovers;
+      int personal_fouls;
+      int points;
+      float game_score;
+    };
+
+    std::list<GameHighsStatLine> game_highs_seasons;
+    std::list<GameHighsStatLine> game_highs_playoff_seasons;
+
     struct CareerStats {
       int total_games;
 
@@ -298,7 +336,7 @@ class PlayerMetadata {
     std::list<TeamInfo> teams_info;
   } career_info;
 
-  static const std::array<std::string, 11> career_tags;
+  static const std::array<std::string, 16> career_tags;
   void AddAttribute(const std::string& attribute, const std::string& value);
   std::string GetFullUrl() const;
   std::string GetFullName() const;

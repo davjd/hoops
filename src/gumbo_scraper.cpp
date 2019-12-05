@@ -162,48 +162,29 @@ bool GumboScraper::FillPlayerMetadata(PlayerMetadata* mutable_player) {
   }
   CSelection sel = scraper_->find("div.players");
   if (sel.nodeNum() == 0) {
-    std::cout << "isempty()\n";
     return false;
   }
-  std::cout << "there exists " << sel.nodeNum()
-            << " findings with such query..\n";
   CNode table = sel.nodeAt(0);
 
-  // Peek content of each section.
+  // Fill with each section's data.
   auto meta_section = table.find("div #meta");
   if (meta_section.nodeNum() != 0) {
-    std::cout << "meta_section: "
-              << meta_section.nodeAt(0).text().substr(0, 100) << "\n";
     FillMetaSection(mutable_player, meta_section.nodeAt(0));
-  } else {
-    std::cout << "div #meta was not found.\n";
   }
 
   auto badge_section = table.find("#bling");
   if (badge_section.nodeNum() != 0) {
-    std::cout << "badge_section: "
-              << badge_section.nodeAt(0).text().substr(0, 100) << "\n";
     FillBadgeData(mutable_player, badge_section.nodeAt(0));
-  } else {
-    std::cout << "ul #bling was not found.\n";
   }
 
   auto uniform_section = table.find("div .uni_holder");
   if (uniform_section.nodeNum() != 0) {
-    std::cout << "uniform_section: "
-              << uniform_section.nodeAt(0).text().substr(0, 100) << "\n";
     FillUniformData(mutable_player, uniform_section.nodeAt(0));
-  } else {
-    std::cout << "div .uni_holder was not found.\n";
   }
 
   auto stats_section = table.find("div .stats_pullout");
   if (stats_section.nodeNum() != 0) {
-    std::cout << "stats_section: "
-              << stats_section.nodeAt(0).text().substr(0, 100) << "\n";
     FillStatsData(mutable_player, stats_section.nodeAt(0));
-  } else {
-    std::cout << "div .stats_pullout was not found.\n";
   }
   return true;
 }
@@ -254,7 +235,7 @@ void GumboScraper::FillMetaSection(PlayerMetadata* player, CNode meta_section) {
   // Extract the image source.
   if (media_sel.nodeNum() != 0 &&
       !media_sel.nodeAt(0).attribute("src").empty()) {
-    std::cout << "src: " << media_sel.nodeAt(0).attribute("src") << "\n";
+    player->AddAttribute("img_src", media_sel.nodeAt(0).attribute("src"));
   }
 
   // Get the info section containing the metadata.
@@ -262,24 +243,12 @@ void GumboScraper::FillMetaSection(PlayerMetadata* player, CNode meta_section) {
   if (person_sel.nodeNum() == 0) return;
   CNode info_item = person_sel.nodeAt(0);
 
-  // Find the name section (which might have a twitter section).
-  CSelection name_sel = info_item.find("h1[itemprop~='name']");
-  if (name_sel.nodeNum() > 0) {
-    std::cout << "name: " << name_sel.nodeAt(0).text() << "\n";
-  } else {
-    std::cout << "Name attribute wasn't found. :(\n";
-  }
-
   // Get all the strong tags that contain meta labels.
   CSelection strong_sel = info_item.find("p > strong");
   if (strong_sel.nodeNum() == 0) {
     return;
   }
 
-  std::vector<std::string> meta_labels = {
-      "Pronunciation", "Position:",    "Shoots:",          "Born:",
-      "College:",      "High School:", "Draft:",           "NBA Debut:",
-      "Hall of Fame:", "Experience:",  "Recruiting Rank:", "Team:"};
   // Parse shoots:
   CNode shoots_node = GetNodeThatContains(strong_sel, "p > strong", "Shoots:");
   if (shoots_node.valid()) {
@@ -299,7 +268,7 @@ void GumboScraper::FillMetaSection(PlayerMetadata* player, CNode meta_section) {
       std::string text =
           position_node.parent().prevSibling().prevSibling().text();
       trim_new_line(&text);
-      std::cout << "nickname: " << text << "\n";
+      player->AddAttribute("nickname", text);
     }
   }
 
@@ -314,8 +283,6 @@ void GumboScraper::FillMetaSection(PlayerMetadata* player, CNode meta_section) {
       GetNodeThatContains(strong_sel, "p > strong", "College:");
   if (college_node.valid()) {
     meta_parser_->GetParseFunction("College")(&college_node, player);
-  } else {
-    std::cout << "No college data.\n";
   }
 
   // Parse high school:
@@ -323,8 +290,6 @@ void GumboScraper::FillMetaSection(PlayerMetadata* player, CNode meta_section) {
       GetNodeThatContains(strong_sel, "p > strong", "High School:");
   if (high_school_node.valid()) {
     meta_parser_->GetParseFunction("High School")(&high_school_node, player);
-  } else {
-    std::cout << "No high school data.\n";
   }
 
   // Parse rank:
@@ -332,8 +297,6 @@ void GumboScraper::FillMetaSection(PlayerMetadata* player, CNode meta_section) {
       GetNodeThatContains(strong_sel, "p > strong", "Recruiting Rank:");
   if (rank_node.valid()) {
     meta_parser_->GetParseFunction("Recruiting Rank")(&rank_node, player);
-  } else {
-    std::cout << "No recruiting rank data.\n";
   }
 
   // Parse NBA Debut:
@@ -341,24 +304,18 @@ void GumboScraper::FillMetaSection(PlayerMetadata* player, CNode meta_section) {
       GetNodeThatContains(strong_sel, "p > strong", "NBA Debut:");
   if (debut_node.valid()) {
     meta_parser_->GetParseFunction("NBA Debut")(&debut_node, player);
-  } else {
-    std::cout << "No debut data.\n";
   }
 
   // Parse experience:
   CNode exp_node = GetNodeThatContains(strong_sel, "p > strong", "Experience:");
   if (exp_node.valid()) {
     meta_parser_->GetParseFunction("Experience")(&exp_node, player);
-  } else {
-    std::cout << "No experience data.\n";
   }
 
   // Parse draft:
   CNode draft_node = GetNodeThatContains(strong_sel, "p > strong", "Draft:");
   if (draft_node.valid()) {
     meta_parser_->GetParseFunction("Draft")(&draft_node, player);
-  } else {
-    std::cout << "No draft data.\n";
   }
 
   // Parse physical attributes.
@@ -368,8 +325,6 @@ void GumboScraper::FillMetaSection(PlayerMetadata* player, CNode meta_section) {
     if (height_parent.valid()) {
       meta_parser_->GetParseFunction("Physical")(&height_parent, player);
     }
-  } else {
-    std::cout << "No physical data.\n";
   }
 
   // Parse pronunciation.
@@ -381,17 +336,14 @@ void GumboScraper::FillMetaSection(PlayerMetadata* player, CNode meta_section) {
     // and twitter section are, so we'll store this information for later.
     pronunciation_found = true;
     meta_parser_->GetParseFunction("Pronunciation")(&pron_node, player);
-  } else {
-    std::cout << "No pronunciation data.\n";
   }
 
+  // Get legal name and twitter name.
   CNode full_name_node = strong_sel.nodeAt(pronunciation_found ? 1 : 0);
-  std::cout << "full_name: " << full_name_node.text() << "\n";
+  player->AddAttribute("legal_name", full_name_node.text());
   CSelection twitter_sel = full_name_node.parent().find("a[href*='twitter']");
   if (twitter_sel.nodeNum() > 1) {
-    std::cout << "twitter: " << twitter_sel.nodeAt(1).text() << "\n";
-  } else {
-    std::cout << "No twitter: " << twitter_sel.nodeNum() << "\n";
+    player->AddAttribute("twitter", twitter_sel.nodeAt(1).text());
   }
 
   // Parse Hall of Fame.
@@ -399,8 +351,6 @@ void GumboScraper::FillMetaSection(PlayerMetadata* player, CNode meta_section) {
       GetNodeThatContains(strong_sel, "p > strong", "Hall of Fame:");
   if (hof_node.valid()) {
     meta_parser_->GetParseFunction("Hall of Fame")(&hof_node, player);
-  } else {
-    std::cout << "No hall of fame data.\n";
   }
 }
 
@@ -410,7 +360,6 @@ void GumboScraper::FillBadgeData(PlayerMetadata* player, CNode badge_section) {
   for (int i = 0; i < lis.nodeNum(); ++i) {
     const std::string achievement = lis.nodeAt(i).text();
     if (achievement.empty()) continue;
-    std::cout << "li: " << achievement << "\n";
     player->AddAchievement(achievement);
   }
 }
@@ -424,7 +373,6 @@ void GumboScraper::FillUniformData(PlayerMetadata* mutable_player,
     const std::string link = links.nodeAt(i).attribute("href");
     std::string number = links.nodeAt(i).text();
     if (team.empty() || link.empty() || number.empty()) continue;
-    std::cout << link << " : " << team << " : " << std::stoi(number) << "\n";
     PlayerMetadata::CareerInformation::TeamInfo team_info = {team, link,
                                                              std::stoi(number)};
     mutable_player->AddTeamInfo(team_info);
@@ -437,7 +385,6 @@ void GumboScraper::FillStatsData(PlayerMetadata* mutable_player,
   for (int i = 0; i < divs.nodeNum(); ++i) {
     CNode div_node = divs.nodeAt(i);
     CSelection h4_sel = div_node.find("h4.poptip");
-    std::cout << divs.nodeAt(i).attribute("class") << ":\n";
     for (int i = 0; i < h4_sel.nodeNum(); ++i) {
       const std::string attribute = h4_sel.nodeAt(i).text();
       if (attribute.empty() && !h4_sel.nodeAt(i).nextSibling().valid() &&
@@ -446,7 +393,6 @@ void GumboScraper::FillStatsData(PlayerMetadata* mutable_player,
         continue;
       float value = std::stof(
           h4_sel.nodeAt(i).nextSibling().nextSibling().nextSibling().text());
-      std::cout << attribute << ": " << value << "\n";
       mutable_player->AddCareerStat(attribute, value);
     }
   }
@@ -454,7 +400,7 @@ void GumboScraper::FillStatsData(PlayerMetadata* mutable_player,
 
 bool GumboScraper::FillNumbers(PlayerMetadata* mutable_player) {
   if (page_type() != BBallReferencePage::PageType::kProfilePage) {
-    std::cout << "incorrect page type.\n";
+    std::cout << "Incorrect page type.\n";
     return false;
   }
 
@@ -464,7 +410,6 @@ bool GumboScraper::FillNumbers(PlayerMetadata* mutable_player) {
     std::cout << "Couldn't find table wrappers.\n";
     return false;
   }
-  std::cout << "there exists " << wrapper_sel.nodeNum() << " table wrappers.\n";
 
   // Before we use the adapters, we must give it a player that we're modifying.
   adapters_->SetPlayer(mutable_player);
@@ -484,7 +429,7 @@ bool GumboScraper::FillNumbers(PlayerMetadata* mutable_player) {
       section_header = section_header.substr(1);
     }
 
-    // We can use this text to get the adapter. e.g:
+    // We can use this text to get the adapter.
     auto adapter = adapters_->GetAdapter(section_header);
     if (adapter == nullptr) {
       std::cout << section_header << " has no adapter.\n";
@@ -495,18 +440,24 @@ bool GumboScraper::FillNumbers(PlayerMetadata* mutable_player) {
     // We got the header, now use the table to find the table rows with each
     // season stat line.
     CNode table_node = wrapper_sel.nodeAt(i);
-    std::cout << "table-stat: " << table_node.attribute("id") << "\n";
+    // table_node.attribute("id") contains the type of stat.
 
-    // TODO: There are sections that don't follow this format, so we'll need to
-    // take care of those instances too.
-    CSelection table_row_sel = table_node.find(
-        "div.table_outer_container > div.overthrow > table.row_summable > "
-        "tbody > tr");
+    // TODO: Could encapsulate the header to get the correct query.
+    std::string table_query;
+    if (section_header.find("Game Highs") != std::string::npos) {
+      table_query =
+          "div.table_outer_container > div.overthrow > table.sortable > tbody "
+          "> tr";
+    } else {
+      table_query =
+          "div.table_outer_container > div.overthrow > table.row_summable > "
+          "tbody > tr";
+    }
+
+    CSelection table_row_sel = table_node.find(table_query);
     if (table_row_sel.nodeNum() == 0) {
       std::cout << "Couldn't find table rows with season stats.\n";
       continue;
-    } else {
-      std::cout << "found multiple table rows.\n";
     }
 
     // Go through each row, as it will have the statline for a season.
@@ -518,7 +469,7 @@ bool GumboScraper::FillNumbers(PlayerMetadata* mutable_player) {
       if (header_sel.nodeNum() == 0) continue;
 
       // We have the season here, so add new one then fill it.
-      std::cout << "Adding season " << header_sel.nodeAt(0).text() << ".\n";
+      // header_sel.nodeAt(0).text() contains the season header.
       adapter->AddSeason();
 
       // Get all the different stats for this season.
@@ -526,7 +477,6 @@ bool GumboScraper::FillNumbers(PlayerMetadata* mutable_player) {
       for (int j = 0; j < stat_sel.nodeNum(); ++j) {
         const std::string stat = stat_sel.nodeAt(j).attribute("data-stat");
         if (stat.empty()) {
-          std::cout << "Empty stat.\n";
           continue;
         }
         adapter->AddAttribute(stat, stat_sel.nodeAt(j).text());
@@ -535,17 +485,21 @@ bool GumboScraper::FillNumbers(PlayerMetadata* mutable_player) {
   }
 
   // Example of how data could be used:
-  float total = 0;
-  std::for_each(
-      mutable_player->career_info.per_game_seasons.begin(),
-      mutable_player->career_info.per_game_seasons.end(),
-      [&total](PlayerMetadata::CareerInformation::PerGameStatLine& stat_line) {
-        total += stat_line.points;
-      });
+  // float total = 0;
+  // std::for_each(
+  //     mutable_player->career_info.per_game_seasons.begin(),
+  //     mutable_player->career_info.per_game_seasons.end(),
+  //     [&total](PlayerMetadata::CareerInformation::PerGameStatLine& stat_line)
+  //     {
+  //       total += stat_line.points;
+  //     });
 
-  std::cout << "career points average: "
-            << (total / mutable_player->career_info.per_game_seasons.size())
-            << "\n";
+  // std::cout << "career points average: "
+  //           << (total / mutable_player->career_info.per_game_seasons.size())
+  //           << "\n";
+  std::cout
+      << mutable_player->career_info.game_highs_playoff_seasons.back().points
+      << "\n";
   return true;
 }
 

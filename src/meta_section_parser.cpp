@@ -17,6 +17,7 @@ const std::array<std::pair<std::string, MetaSectionParser::ParseFunctor>, 12>
             if (!sib.valid() || sib.text().empty()) return;
             mutable_player->AddAttribute("pronunciation", sib.text());
             std::cout << "pronunciation: " << sib.text() << "\n";
+            mutable_player->AddAttribute("pronunciation", sib.text());
           }},
          {"Position",
           [](CNode* node, PlayerMetadata* mutable_player) {
@@ -29,7 +30,7 @@ const std::array<std::pair<std::string, MetaSectionParser::ParseFunctor>, 12>
             text = text.substr(0, sep);
             trim_new_line(&text);
             text = text.substr(2);
-            std::cout << "Position: " << text << "\n";
+            mutable_player->AddAttribute("position", text);
           }},
          {"Shoots",
           [](CNode* node, PlayerMetadata* mutable_player) {
@@ -45,7 +46,6 @@ const std::array<std::pair<std::string, MetaSectionParser::ParseFunctor>, 12>
               if (text.empty()) return;
               trim_new_line(&text);
               text = text.substr(2);
-              std::cout << "Shoots: " << text << "\n";
               mutable_player->AddAttribute("shoots", text);
             }
           }},
@@ -60,6 +60,8 @@ const std::array<std::pair<std::string, MetaSectionParser::ParseFunctor>, 12>
             CSelection age_span_sel = span_sel.find("span:contains('Age')");
             if (age_span_sel.nodeNum() == 1) {
               std::cout << "age: " << age_span_sel.nodeAt(0).text() << "\n";
+              mutable_player->AddAttribute("age",
+                                           age_span_sel.nodeAt(0).text());
             } else {
               std::cout << "couldn't find age..\n";
             }
@@ -73,7 +75,7 @@ const std::array<std::pair<std::string, MetaSectionParser::ParseFunctor>, 12>
               if (comma != std::string::npos) {
                 text = text.substr(0, comma + 1) + text.substr(comma + 12);
               }
-              std::cout << "date: " << text << "\n";
+              mutable_player->AddAttribute("birth_date", text);
             }
 
             CSelection place_span_sel =
@@ -82,7 +84,7 @@ const std::array<std::pair<std::string, MetaSectionParser::ParseFunctor>, 12>
               std::string text = place_span_sel.nodeAt(0).text();
               trim_new_line(&text);
               text = text.substr(4);
-              std::cout << "location: " << text << "\n";
+              mutable_player->AddAttribute("birth_location", text);
             }
           }},
          {"College",
@@ -90,10 +92,10 @@ const std::array<std::pair<std::string, MetaSectionParser::ParseFunctor>, 12>
             if (!node->valid()) return;
             CSelection span_sel = node->parent().find("p > a");
             if (span_sel.nodeNum() < 1) return;
-            std::cout << span_sel.nodeAt(0).text() << "\n";
             auto college_node = span_sel.nodeAt(0);
-            std::cout << "college: " << college_node.text() << ": "
-                      << college_node.attribute("href") << "\n";
+            mutable_player->AddAttribute("college", college_node.text());
+            mutable_player->AddAttribute("college_url",
+                                         college_node.attribute("href"));
           }},
          {"High School",
           [](CNode* node, PlayerMetadata* mutable_player) {
@@ -117,7 +119,7 @@ const std::array<std::pair<std::string, MetaSectionParser::ParseFunctor>, 12>
                 text += " " + sib.text();
               }
               // TODO: Maybe remove the "in" part of the text?
-              std::cout << "High school: " << text << "\n";
+              mutable_player->AddAttribute("high_school", text);
             }
           }},
          {"Draft",
@@ -128,14 +130,16 @@ const std::array<std::pair<std::string, MetaSectionParser::ParseFunctor>, 12>
                 std::string text = sib.text();
                 if (!text.empty()) {
                   trim_new_line(&text);
-                  std::cout << "draft: " << text.substr(1) << "\n";
+                  mutable_player->AddAttribute("draft", text.substr(1));
                 }
               } else if (sib.tag() == "a") {
                 std::string link = sib.attribute("href");
                 if (link.find("/teams/") != std::string::npos) {
-                  std::cout << "team: " << sib.text() << ": " << link << "\n";
+                  mutable_player->AddAttribute("draft_team_url", link);
+                  mutable_player->AddAttribute("draft_team", sib.text());
                 } else if (link.find("draft/NBA") != std::string::npos) {
-                  std::cout << "year: " << sib.text() << ": " << link << "\n";
+                  mutable_player->AddAttribute("draft_year_url", link);
+                  mutable_player->AddAttribute("draft_year", sib.text());
                 }
               }
             }
@@ -150,7 +154,7 @@ const std::array<std::pair<std::string, MetaSectionParser::ParseFunctor>, 12>
             }
             std::string text = sib.text();
             trim_new_line(&text);
-            std::cout << "experience: " << text.substr(2) << "\n";
+            mutable_player->AddAttribute("experience", text.substr(2));
           }},
          {"Physical",
           [](CNode* node, PlayerMetadata* mutable_player) {
@@ -158,12 +162,15 @@ const std::array<std::pair<std::string, MetaSectionParser::ParseFunctor>, 12>
             // have label).
             if (!node->valid() || node->childNum() == 0) return;
             std::cout << node->text() << "\n";
+            // node->text() has integer metrics, might want to use them.
             for (int i = 0; i < node->childNum(); ++i) {
               if (node->childAt(i).tag() == "span") {
                 if (node->childAt(i).attribute("itemprop") == "height") {
-                  std::cout << "height: " << node->childAt(i).text() << "\n";
+                  mutable_player->AddAttribute("height",
+                                               node->childAt(i).text());
                 } else if (node->childAt(i).attribute("itemprop") == "weight") {
-                  std::cout << "weight: " << node->childAt(i).text() << "\n";
+                  mutable_player->AddAttribute("weight",
+                                               node->childAt(i).text());
                 }
               }
             }
@@ -176,11 +183,14 @@ const std::array<std::pair<std::string, MetaSectionParser::ParseFunctor>, 12>
                 std::string text = sib.text();
                 if (!text.empty()) {
                   trim_new_line(&text);
-                  std::cout << "rank: " << text.substr(1) << "\n";
+                  mutable_player->AddAttribute("recruiting_rank",
+                                               text.substr(1));
                 }
               } else if (sib.tag() == "a") {
-                std::cout << "link: " << sib.text() << ": "
-                          << sib.attribute("href") << "\n";
+                mutable_player->AddAttribute("recruiting_rank_year",
+                                             sib.text());
+                mutable_player->AddAttribute("recruiting_rank_year_url",
+                                             sib.attribute("href"));
               }
             }
           }},
@@ -198,6 +208,10 @@ const std::array<std::pair<std::string, MetaSectionParser::ParseFunctor>, 12>
             std::cout << "year: "
                       << node->parent().find("p > a").nodeAt(0).attribute(
                              "href");
+            mutable_player->AddAttribute("hall_of_fame", text);
+            mutable_player->AddAttribute(
+                "hall_of_fame_url",
+                node->parent().find("p > a").nodeAt(0).attribute("href"));
           }},
          {"NBA Debut", [](CNode* node, PlayerMetadata* mutable_player) {
             if (!node->valid()) return;
@@ -206,8 +220,9 @@ const std::array<std::pair<std::string, MetaSectionParser::ParseFunctor>, 12>
               std::cout << "No sibilings...\n";
               return;
             }
-            std::cout << "debut: " << sib.text() << ": "
-                      << sib.attribute("href") << "\n";
+            mutable_player->AddAttribute("nba_debut", sib.text());
+            mutable_player->AddAttribute("nba_debut_url",
+                                         sib.attribute("href"));
           }}}};
 
 MetaSectionParser::~MetaSectionParser() {}
