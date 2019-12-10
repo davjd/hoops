@@ -35,7 +35,6 @@ const std::array<std::string, 16> PlayerMetadata::career_tags = {
 
 void PlayerMetadata::AddAttribute(const std::string& attribute,
                                   const std::string& value) {
-  std::cout << "Adding " << attribute << " with " << value << "\n";
   if (std::find(school_tags.begin(), school_tags.end(), attribute) !=
       school_tags.end()) {
     AddSchoolInformation(attribute, value);
@@ -171,7 +170,6 @@ void PlayerMetadata::AddCareerStat(const std::string& stat_type, float value) {
   // TODO: This style of setting values isn't scalable. Maybe instead implement
   // adapters that translate html tags to internal representations of those
   // tags.
-  std::cout << "Adding " << stat_type << " with " << value << "\n";
   if (stat_type == "G") {
     career_info.career_stats.total_games = value;
   } else if (stat_type == "PTS") {

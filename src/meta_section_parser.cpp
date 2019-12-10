@@ -16,7 +16,6 @@ const std::array<std::pair<std::string, MetaSectionParser::ParseFunctor>, 12>
             CNode sib = node->nextSibling();
             if (!sib.valid() || sib.text().empty()) return;
             mutable_player->AddAttribute("pronunciation", sib.text());
-            std::cout << "pronunciation: " << sib.text() << "\n";
             mutable_player->AddAttribute("pronunciation", sib.text());
           }},
          {"Position",
@@ -37,7 +36,7 @@ const std::array<std::pair<std::string, MetaSectionParser::ParseFunctor>, 12>
             if (!node->valid()) return;
             CNode sib = node->nextSibling();
             if (!sib.valid()) {
-              std::cout << "No sibilings...\n";
+              std::cout << "SHOOTS No sibilings...\n";
               return;
             }
             // Now get text if it contains it.
@@ -59,11 +58,8 @@ const std::array<std::pair<std::string, MetaSectionParser::ParseFunctor>, 12>
 
             CSelection age_span_sel = span_sel.find("span:contains('Age')");
             if (age_span_sel.nodeNum() == 1) {
-              std::cout << "age: " << age_span_sel.nodeAt(0).text() << "\n";
               mutable_player->AddAttribute("age",
                                            age_span_sel.nodeAt(0).text());
-            } else {
-              std::cout << "couldn't find age..\n";
             }
 
             CSelection date_span_sel =
@@ -161,7 +157,6 @@ const std::array<std::pair<std::string, MetaSectionParser::ParseFunctor>, 12>
             // Note: parent node is passed (since this metadata doesn't actually
             // have label).
             if (!node->valid() || node->childNum() == 0) return;
-            std::cout << node->text() << "\n";
             // node->text() has integer metrics, might want to use them.
             for (int i = 0; i < node->childNum(); ++i) {
               if (node->childAt(i).tag() == "span") {
@@ -199,15 +194,11 @@ const std::array<std::pair<std::string, MetaSectionParser::ParseFunctor>, 12>
             if (!node->valid()) return;
             CNode sib = node->nextSibling();
             if (!sib.valid()) {
-              std::cout << "No sibilings...\n";
+              std::cout << "HALL OF FAME No sibilings...\n";
               return;
             }
             std::string text = sib.text();
             trim_new_line(&text);
-            std::cout << "hof: " << text << "\n";
-            std::cout << "year: "
-                      << node->parent().find("p > a").nodeAt(0).attribute(
-                             "href");
             mutable_player->AddAttribute("hall_of_fame", text);
             mutable_player->AddAttribute(
                 "hall_of_fame_url",
@@ -217,7 +208,7 @@ const std::array<std::pair<std::string, MetaSectionParser::ParseFunctor>, 12>
             if (!node->valid()) return;
             CNode sib = node->nextSibling();
             if (!sib.valid()) {
-              std::cout << "No sibilings...\n";
+              std::cout << "NBA DEBUT: No sibilings...\n";
               return;
             }
             mutable_player->AddAttribute("nba_debut", sib.text());

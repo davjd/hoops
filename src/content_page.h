@@ -9,7 +9,6 @@ namespace hoops {
 class ContentPage {
  public:
   virtual ~ContentPage() {
-    std::cout << "deleting inside ContentPage.\n";
   }
   ContentPage() = delete;
   explicit ContentPage(const std::string& content) : content_(content) {}

@@ -13,6 +13,19 @@
 #include "Document.h"
 #include "Node.h"
 
+#include <wx/wxprec.h>
+#ifndef WX_PRECOMP
+#include <wx/wx.h>
+#endif
+
+// usage:
+//
+
+class MyApp : public wxApp {
+ public:
+  virtual bool OnInit();
+};
+
 int main() {
   auto env =
       std::make_unique<hoops::HoopsEnvironment>(new hoops::GumboScraper());

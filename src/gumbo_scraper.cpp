@@ -30,7 +30,6 @@ void GumboScraper::SetPage(ContentPage* page) {
   ScraperWrapper<CDocument>::SetPage(page);
   auto page_cast = static_cast<BBallReferencePage*>(page);
   page_type_ = page_cast->GetPageType();
-  std::cout << "page type internal: " << page_type_ << "\n";
   std::string content_copy = page->content();
   if (content_copy.size() != 0) scraper_->parse(content_copy);
 }
@@ -195,7 +194,6 @@ CNode GetNodeThatContains(CSelection selection, const std::string& element,
   if (label_sel.nodeNum() != 0) {
     return label_sel.nodeAt(0);
   }
-  std::cout << query << " not found.\n";
   return CNode();
 }
 
@@ -205,7 +203,6 @@ CNode GetNodeThatContains(CNode node, const std::string& element,
   if (label_sel.nodeNum() != 0) {
     return label_sel.nodeAt(0);
   }
-  std::cout << query << " not found.\n";
   return CNode();
 }
 
@@ -432,10 +429,10 @@ bool GumboScraper::FillNumbers(PlayerMetadata* mutable_player) {
     // We can use this text to get the adapter.
     auto adapter = adapters_->GetAdapter(section_header);
     if (adapter == nullptr) {
-      std::cout << section_header << " has no adapter.\n";
+      // TODO: Currently, Similarity Scores, College, and Salaries don't have
+      // any adapters.
       continue;
     }
-    std::cout << section_header << "\n";
 
     // We got the header, now use the table to find the table rows with each
     // season stat line.
@@ -483,23 +480,6 @@ bool GumboScraper::FillNumbers(PlayerMetadata* mutable_player) {
       }
     }
   }
-
-  // Example of how data could be used:
-  // float total = 0;
-  // std::for_each(
-  //     mutable_player->career_info.per_game_seasons.begin(),
-  //     mutable_player->career_info.per_game_seasons.end(),
-  //     [&total](PlayerMetadata::CareerInformation::PerGameStatLine& stat_line)
-  //     {
-  //       total += stat_line.points;
-  //     });
-
-  // std::cout << "career points average: "
-  //           << (total / mutable_player->career_info.per_game_seasons.size())
-  //           << "\n";
-  std::cout
-      << mutable_player->career_info.game_highs_playoff_seasons.back().points
-      << "\n";
   return true;
 }
 
