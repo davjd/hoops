@@ -2,6 +2,7 @@
 #define UTIL_H_
 
 #include <string>
+#include <vector>
 
 namespace hoops {
 
@@ -16,6 +17,8 @@ bool is_number(const std::string& word);
 float float_or_negative(const std::string& word);
 
 int int_or_negative(const std::string& word);
+
+std::vector<std::string> split(const std::string& str, const std::string& delimiter);
 
 }  // namespace hoops
 #endif  // UTIL_H_

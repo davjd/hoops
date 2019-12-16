@@ -1,10 +1,13 @@
 #ifndef PROFILE_LOADER_H_
 #define PROFILE_LOADER_H_
 
+#include <array>
 #include <string>
+#include "commands/command.h"
 #include "loader.h"
 #include "page_reader.h"
 #include "player_metadata.h"
+#include <memory>
 
 namespace hoops {
 
@@ -58,6 +61,11 @@ class HoopsEnvironment {
   static const std::string kAlphabet;
 
   const std::string Alphabet();
+
+  static const std::array<std::unique_ptr<Command>, 3> kCommands;
+
+  bool Process(const std::string& line);
+  void Run();
 
  private:
   std::unique_ptr<PageReader> scraper_;

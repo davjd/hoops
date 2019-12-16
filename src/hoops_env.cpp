@@ -7,12 +7,21 @@
 #include <string>
 #include <thread>
 #include <unordered_map>
+#include "commands/help_command.h"
+#include "commands/pull_command.h"
+#include "commands/quit_command.h"
 #include "env_namespace.h"
 #include "gumbo_scraper.h"
 #include "player_extractor.h"
 #include "util.h"
 
 namespace hoops {
+
+// Array of all commands for the environment.
+// NOTE: Help command should always be first in the array.
+const std::array<std::unique_ptr<Command>, 3> HoopsEnvironment::kCommands = {
+    std::make_unique<HelpCommand>(), std::make_unique<PullCommand>(),
+    std::make_unique<QuitCommand>()};
 
 HoopsEnvironment::HoopsEnvironment(PageReader* scraper)
     : scraper_(std::unique_ptr<PageReader>(scraper)),
@@ -239,6 +248,35 @@ std::string HoopsEnvironment::OldFileName(const std::string& file_name) {
 
 bool HoopsEnvironment::IsUsingOldName(const std::string& file_name) {
   return file_name.find(".txt") != std::string::npos;
+}
+
+bool HoopsEnvironment::Process(const std::string& line) {
+  std::vector<std::string> command_vector = split(line, " ");
+  bool found = false;
+  for (auto& command : kCommands) {
+    // Find the correct handler for this command.
+    if (command->IsValidCommand(command_vector.at(0))) {
+      found = true;
+      if (!command->Process(command_vector)) {
+        // The handler will tell us whether there was a failure or whether we
+        // need to quit by returning false.
+        return false;
+      }
+    }
+  }
+  if (!found) {
+    std::cout << kCommands.at(0)->usage_message();
+  }
+  return true;
+}
+
+void HoopsEnvironment::Run() {
+  std::string line;
+  while (std::getline(std::cin, line)) {
+    if (!Process(line)) {
+      break;
+    }
+  }
 }
 
 const std::string HoopsEnvironment::kAlphabet = "abcdefghijklmnopqrstuvwxyz";
