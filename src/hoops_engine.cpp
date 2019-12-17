@@ -32,14 +32,24 @@ bool HoopsEngine::Start() {
 
 bool HoopsEngine::Process(const std::string& line) {
   std::vector<std::string> command_vector = split(line, " ");
+  const std::string input_command = command_vector.at(0);
   bool found = false;
   for (auto& command : kCommands) {
     // Find the correct handler for this command.
-    if (command->IsValidCommand(command_vector.at(0))) {
+    if (command->IsValidCommand(input_command)) {
       found = true;
-      if (!command->Process(command_vector)) {
-        // The handler will tell us whether there was a failure or whether we
-        // need to quit by returning false.
+      // Remove the command name and pass the rest of the arguments.
+      command_vector.erase(command_vector.begin());
+      bool quit = false;
+
+      // The handler will tell us whether there was a failure or whether we
+      // need to quit by returning false.
+      if (command_vector.size() == 0) {
+        quit = !command->Process();
+      } else {
+        quit = !command->Process(command_vector);
+      }
+      if (quit) {
         return false;
       }
     }

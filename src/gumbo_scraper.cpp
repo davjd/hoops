@@ -156,7 +156,6 @@ PlayerMetadata GumboScraper::GetPlayer(const std::string& player_name) {
 
 bool GumboScraper::FillPlayerMetadata(PlayerMetadata* mutable_player) {
   if (page_type() != BBallReferencePage::PageType::kProfilePage) {
-    std::cout << "incorrect page type.\n";
     return false;
   }
   CSelection sel = scraper_->find("div.players");
@@ -397,7 +396,6 @@ void GumboScraper::FillStatsData(PlayerMetadata* mutable_player,
 
 bool GumboScraper::FillNumbers(PlayerMetadata* mutable_player) {
   if (page_type() != BBallReferencePage::PageType::kProfilePage) {
-    std::cout << "Incorrect page type.\n";
     return false;
   }
 
@@ -466,8 +464,8 @@ bool GumboScraper::FillNumbers(PlayerMetadata* mutable_player) {
       if (header_sel.nodeNum() == 0) continue;
 
       // We have the season here, so add new one then fill it.
-      // header_sel.nodeAt(0).text() contains the season header.
       adapter->AddSeason();
+      adapter->AddAttribute("Season", header_sel.nodeAt(0).text());
 
       // Get all the different stats for this season.
       CSelection stat_sel = row_node.find("td");

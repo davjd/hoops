@@ -18,15 +18,12 @@ bool QuitCommand::IsValidCommand(const std::string& command) {
   return command == "-quit" || command == "-q";
 }
 
-// Help command won't take arguments.
+// Help command won't take arguments, so output help message.
 bool QuitCommand::Process(std::vector<std::string> arguments) {
   std::cout << usage_message();
-  return false;
+  return true;
 }
 
-bool QuitCommand::Process() {
-  std::cout << usage_message();
-  return false;
-}
+bool QuitCommand::Process() { return false; }
 
 }  // namespace hoops

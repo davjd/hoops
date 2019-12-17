@@ -18,7 +18,10 @@ float float_or_negative(const std::string& word);
 
 int int_or_negative(const std::string& word);
 
-std::vector<std::string> split(const std::string& str, const std::string& delimiter);
+std::vector<std::string> split(const std::string& str,
+                               const std::string& delimiter);
+
+std::string collapse_vector(const std::vector<std::string>& command_vector);
 
 }  // namespace hoops
 #endif  // UTIL_H_

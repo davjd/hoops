@@ -57,4 +57,13 @@ std::vector<std::string> split(const std::string& str,
   return res;
 }
 
+std::string collapse_vector(const std::vector<std::string>& command_vector) {
+  std::string result("");
+  for (int i = 0; i < command_vector.size() - 1; ++i) {
+    result += command_vector.at(i) + " ";
+  }
+  result += command_vector.at(command_vector.size() - 1);
+  return result;
+}
+
 }  // namespace hoops

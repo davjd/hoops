@@ -37,8 +37,6 @@ bool HoopsEnvironment::LoadPlayerIndices(bool delay) {
     const std::string url = env::PlayersIndexUrl(letter);
     if (loader_->LoadIndexPage(url)) {
       if (delay) std::this_thread::sleep_for(std::chrono::seconds(3));
-      std::cout << env::filename::IndexFileName(url)
-                << " was loaded succesfully.\n";
     } else {
       std::cout << env::filename::IndexFileName(url)
                 << " was not loaded succesfully.\n";
@@ -52,17 +50,10 @@ bool HoopsEnvironment::LoadPlayerIndices(bool delay) {
 // instead create PlayerMetadata objects. If we need to read from the file
 // directly, we can access the url link from the player object.
 bool HoopsEnvironment::LoadPlayerProfiles(bool delay) {
-  for (const char& letter : Alphabet()) {
+  for (const char& letter : kAlphabet) {
     std::string player_urls_page =
         loader_->GetContent(env::PlayersIndexUrl(letter));
     if (player_urls_page.empty()) return false;
-    // TODO: BBallReferencePage page(player_urls_page,
-    // BallReferencePage::PageType::kProfilePage); problem wit this is its
-    // making direct reference to BBallRefPage. we could move this function
-    // elsewhere, or somehow use ContentPage instead.
-    std::cout << "Index page url: " << env::PlayersIndexUrl(letter) << " : "
-              << env::filename::IndexFileName(env::PlayersIndexUrl(letter))
-              << "\n\n";
     scraper_->SetPageContent(player_urls_page, env::PlayersIndexUrl(letter));
 
     auto player_map = letter_players_map[letter].get();
@@ -74,22 +65,17 @@ bool HoopsEnvironment::LoadPlayerProfiles(bool delay) {
       if (url.empty()) return false;
 
       // Delay by a couple of seconds if we need to make a request.
-      int delay_s = 0;
+      int delay_sec = 0;
       if (!Loader::DoesProfileUrlExist(url)) {
-        std::cout << "file doesn't exist.. creating timer..\n";
+        std::cout << "File doesn't exist.. creating timer..\n";
         std::mt19937 rng(0);
         std::uniform_int_distribution<int> gen(3, 5);
-        delay_s = gen(rng);
+        delay_sec = gen(rng);
       }
-
-      std::cout << "grabbing profile page for " << player.GetFullName() << "\n";
       player_map->emplace(string_to_lower(player.GetFullName()), player);
-      // TODO: player_name_to_letter->emplace(player.) could instead linearly
-      // look for it.
       if (loader_->LoadProfilePage(url)) {
-        std::cout << env::filename::ProfileFileName(url)
-                  << " was loaded succesfully.\n";
-        if (delay_s) std::this_thread::sleep_for(std::chrono::seconds(delay_s));
+        if (delay_sec)
+          std::this_thread::sleep_for(std::chrono::seconds(delay_sec));
       } else {
         std::cout << env::filename::ProfileFileName(url)
                   << " was not loaded succesfully.\n";
@@ -138,7 +124,8 @@ PlayerMetadata HoopsEnvironment::GetPlayer(const std::string& full_name) {
   return player_iter->second;
 }
 
-// ill metadata for given player. Should be moved to more appropriate class.
+// Fill metadata for given player. Should be moved to more appropriate class.
+// Not really needed anymore.
 void HoopsEnvironment::FillPlayerMetadata(PlayerMetadata& player) {
   std::cout << "Fill in data for " << player.GetFullName() << "\n";
   const std::string page_content = GetPage(player);
@@ -156,6 +143,43 @@ void HoopsEnvironment::FillPlayerMetadata(PlayerMetadata& player) {
 
   CNode table = sel.nodeAt(0);
   std::cout << table.text() << "\n";
+}
+
+bool HoopsEnvironment::FillAllStats(PlayerMetadata* mutable_player) {
+  // Returns if we have already filled this player with all of its statistics.
+  if (mutable_player->IsInitialized()) {
+    return true;
+  }
+
+  // Convert to a scraper, read the player page into memory.
+  auto gumbo = static_cast<hoops::GumboScraper*>(scraper());
+  auto page = new hoops::BBallReferencePage(GetPage(*mutable_player),
+                                            mutable_player->GetFullUrl());
+  gumbo->SetPage(page);
+
+  // Scrape all statistics for the player.
+  if (!gumbo->FillPlayerMetadata(mutable_player)) {
+    std::cout << "Error filling metadata.\n";
+  }
+  if (!gumbo->FillNumbers(mutable_player)) {
+    std::cout << "Error filling numbers.\n";
+  }
+
+  // To avoid rescraping players, we'll set it as initialized.
+  mutable_player->SetInitialize();
+  return true;
+}
+
+// TODO: There's a bug with this, causing floating point exceptions.
+PlayerMetadata HoopsEnvironment::GetRandomPlayer() {
+  auto letter_iter = letter_players_map.begin();
+  int r = rand() % letter_players_map.size();
+  int r1 = rand() % player_name_to_letter.size();
+  std::cout << r << " " << r1 << "\n";
+  std::advance(letter_iter, r);
+  auto player_iter = letter_iter->second->begin();
+  std::advance(player_iter, r1);
+  return player_iter->second;
 }
 
 // Delete files that have index of players for all letters.
@@ -179,6 +203,7 @@ PageReader* HoopsEnvironment::scraper() { return scraper_.get(); }
 
 Loader* HoopsEnvironment::loader() { return loader_.get(); }
 
+// Used for testing, since we don't want to load all profile pages.
 const std::string HoopsEnvironment::Alphabet() {
   return kAlphabet.substr(0, 1);
 }

@@ -8,6 +8,7 @@
 
 namespace hoops {
 class HoopsEnvironment;
+class PlayerMetadata;
 
 class PullCommand : public Command {
  public:
@@ -16,6 +17,9 @@ class PullCommand : public Command {
   virtual bool IsValidCommand(const std::string& command) override;
   virtual bool Process(std::vector<std::string> arguments) override;
   virtual bool Process() override;
+
+ private:
+  void OutputStatistics(const PlayerMetadata& player);
 };
 
 }  // namespace hoops

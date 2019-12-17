@@ -15,6 +15,7 @@ class Command {
   virtual bool IsValidCommand(const std::string& command) = 0;
   virtual bool Process(std::vector<std::string> arguments) = 0;
   virtual bool Process() = 0;
+  HoopsEnvironment* env();
 
  private:
   const std::string usage_message_;

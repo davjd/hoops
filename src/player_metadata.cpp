@@ -128,9 +128,9 @@ void PlayerMetadata::AddCareerInformation(const std::string& attribute,
   } else if (attribute == "draft_year_url") {
     career_info.draft_year_url = value;
   } else if (attribute == "draft_team") {
-    career_info.draft_team_url = value;
+    career_info.draft_team = value;
   } else if (attribute == "draft_year") {
-    career_info.draft_team_url = value;
+    career_info.draft_year = value;
   } else if (attribute == "nba_debut") {
     career_info.nba_debut = value;
   } else if (attribute == "nba_debut_url") {
@@ -219,4 +219,7 @@ std::string PlayerMetadata::GetFullUrl() const {
   return env::url::kBaseUrl + id_info.url;
 }
 
+bool PlayerMetadata::IsInitialized() { return initialized_; }
+
+void PlayerMetadata::SetInitialize() { initialized_ = true; }
 }  // namespace hoops

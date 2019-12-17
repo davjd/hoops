@@ -1,5 +1,5 @@
-#ifndef PROFILE_LOADER_H_
-#define PROFILE_LOADER_H_
+#ifndef HOOPS_ENV_H_
+#define HOOPS_ENV_H_
 
 #include <array>
 #include <memory>
@@ -63,6 +63,12 @@ class HoopsEnvironment {
 
   const std::string Alphabet();
 
+  // Fill all stats for a given player.
+  bool FillAllStats(PlayerMetadata* mutable_player);
+
+  // Get random player.
+  PlayerMetadata GetRandomPlayer();
+
  private:
   std::unique_ptr<PageReader> scraper_;
   std::unique_ptr<Loader> loader_;
@@ -74,4 +80,4 @@ class HoopsEnvironment {
 
 }  // namespace hoops
 
-#endif  // PROFILE_LOADER_H_
+#endif  // HOOPS_ENV_H_

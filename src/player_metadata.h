@@ -53,6 +53,8 @@ class PlayerMetadata {
     std::string draft;
     std::string draft_team_url;
     std::string draft_year_url;
+    std::string draft_team;
+    std::string draft_year;
     std::string nba_debut;
     std::string nba_debut_url;
     int recruiting_rank;
@@ -353,6 +355,16 @@ class PlayerMetadata {
   CareerInformation::CareerStats GetCareerStats();
   void AddCareerStat(const std::string& stat_type, float value);
   void AddTeamInfo(PlayerMetadata::CareerInformation::TeamInfo team_info);
+
+  // Returns whether we have initialized this player with all statistics.
+  bool IsInitialized();
+
+  // Set this player as initialized.
+  void SetInitialize();
+
+ private:
+  // Whether we have initialized this player with all of its metadata.
+  bool initialized_;
 };
 
 }  // namespace hoops
