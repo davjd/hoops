@@ -1,4 +1,5 @@
 #include "hoops_env.h"
+
 #include <cctype>
 #include <fstream>
 #include <iostream>
@@ -7,9 +8,6 @@
 #include <string>
 #include <thread>
 #include <unordered_map>
-#include "commands/help_command.h"
-#include "commands/pull_command.h"
-#include "commands/quit_command.h"
 #include "env_namespace.h"
 #include "gumbo_scraper.h"
 #include "player_extractor.h"
@@ -17,11 +15,7 @@
 
 namespace hoops {
 
-// Array of all commands for the environment.
-// NOTE: Help command should always be first in the array.
-const std::array<std::unique_ptr<Command>, 3> HoopsEnvironment::kCommands = {
-    std::make_unique<HelpCommand>(), std::make_unique<PullCommand>(),
-    std::make_unique<QuitCommand>()};
+HoopsEnvironment::~HoopsEnvironment() {}
 
 HoopsEnvironment::HoopsEnvironment(PageReader* scraper)
     : scraper_(std::unique_ptr<PageReader>(scraper)),
@@ -34,9 +28,7 @@ HoopsEnvironment::HoopsEnvironment(PageReader* scraper)
 }
 
 bool HoopsEnvironment::Init() {
-  if (!LoadPlayerIndices(false)) return false;
-  if (!LoadPlayerProfiles(true)) return false;
-  return true;
+  return (LoadPlayerIndices(false) && LoadPlayerProfiles(true));
 }
 
 // Load/store all files that contain list of players for corresponding letter.
@@ -191,8 +183,6 @@ const std::string HoopsEnvironment::Alphabet() {
   return kAlphabet.substr(0, 1);
 }
 
-// For some reason the html table body is commented out before being rendered.
-// Therefore, we must remove the comment symbol.
 void HoopsEnvironment::FixPage(const PlayerMetadata& player) {
   FixPage(env::filename::ProfileFileName(player.GetFullUrl()));
 }
@@ -226,57 +216,6 @@ void HoopsEnvironment::FixPage(const std::string& file_name) {
   }
   std::fstream file(file_name, std::fstream::out | std::fstream::trunc);
   file << page;
-  std::cout << "count: " << count << "\n";
-}
-
-bool HoopsEnvironment::RenameFile(const std::string& file_name) {
-  size_t period_pos = file_name.find_last_of('.');
-  if (period_pos == std::string::npos) {
-    return false;
-  }
-  std::string new_file_name = file_name.substr(0, ++period_pos) + "html";
-  return rename(file_name.c_str(), new_file_name.c_str()) == 0;
-}
-
-std::string HoopsEnvironment::OldFileName(const std::string& file_name) {
-  size_t period_pos = file_name.find_last_of('.');
-  if (period_pos == std::string::npos) {
-    return "";
-  }
-  return file_name.substr(0, ++period_pos) + "txt";
-}
-
-bool HoopsEnvironment::IsUsingOldName(const std::string& file_name) {
-  return file_name.find(".txt") != std::string::npos;
-}
-
-bool HoopsEnvironment::Process(const std::string& line) {
-  std::vector<std::string> command_vector = split(line, " ");
-  bool found = false;
-  for (auto& command : kCommands) {
-    // Find the correct handler for this command.
-    if (command->IsValidCommand(command_vector.at(0))) {
-      found = true;
-      if (!command->Process(command_vector)) {
-        // The handler will tell us whether there was a failure or whether we
-        // need to quit by returning false.
-        return false;
-      }
-    }
-  }
-  if (!found) {
-    std::cout << kCommands.at(0)->usage_message();
-  }
-  return true;
-}
-
-void HoopsEnvironment::Run() {
-  std::string line;
-  while (std::getline(std::cin, line)) {
-    if (!Process(line)) {
-      break;
-    }
-  }
 }
 
 const std::string HoopsEnvironment::kAlphabet = "abcdefghijklmnopqrstuvwxyz";

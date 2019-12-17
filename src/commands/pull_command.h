@@ -7,11 +7,13 @@
 #include <vector>
 
 namespace hoops {
+class HoopsEnvironment;
+
 class PullCommand : public Command {
  public:
   virtual ~PullCommand() override;
-  PullCommand();
-  virtual bool IsValidCommand(const std::string &command) override;
+  PullCommand(HoopsEnvironment* env);
+  virtual bool IsValidCommand(const std::string& command) override;
   virtual bool Process(std::vector<std::string> arguments) override;
   virtual bool Process() override;
 };

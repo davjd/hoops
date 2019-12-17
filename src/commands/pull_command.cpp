@@ -1,14 +1,16 @@
 #include "pull_command.h"
 
 #include <iostream>
+#include "hoops_env.h"
 
 namespace hoops {
 
-PullCommand::PullCommand()
+PullCommand::PullCommand(HoopsEnvironment* env)
     : Command(
           "Usage:\n"
           "-pull <player full name>\n"
-          "   Returns stats for given player.\n") {}
+          "   Returns stats for given player.\n",
+          env) {}
 
 PullCommand::~PullCommand() {}
 

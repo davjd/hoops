@@ -1,20 +1,24 @@
 #include "help_command.h"
 
 #include <iostream>
+#include "hoops_env.h"
 
 namespace hoops {
 
-HelpCommand::HelpCommand()
+HelpCommand::HelpCommand(HoopsEnvironment* env)
     : Command(
           "Usage:\n"
+          "-help\n"
+          "   List valid commands.\n"
           "-quit\n"
           "   Quit hoops program.\n"
           "-fun\n"
-          "   Returns a fun fact.\n"
+          "   Return a fun fact.\n"
           "-pull <player full name>\n"
-          "   Returns stats for given player.\n"
+          "   Return stats for given player.\n"
           "-cmp <playerfull name> <player full name>\n"
-          "   Compares the two given players.\n") {}
+          "   Compare the two given players.\n",
+          env) {}
 
 HelpCommand::~HelpCommand() {}
 

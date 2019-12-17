@@ -46,7 +46,10 @@ set(HEADER_FILES src/util.cpp
                  src/commands/help_command.cpp
                  src/commands/pull_command.cpp
                  src/commands/quit_command.cpp
-                 src/hoops_env.cpp)
+                 src/commands/fun_command.cpp
+                 src/commands/compare_command.cpp
+                 src/hoops_env.cpp
+                 src/hoops_engine.cpp)
 
 include_directories(src/)
 

@@ -1,14 +1,16 @@
 #include "quit_command.h"
 
 #include <iostream>
+#include "hoops_env.h"
 
 namespace hoops {
 
-QuitCommand::QuitCommand()
+QuitCommand::QuitCommand(HoopsEnvironment* env)
     : Command(
           "Usage:\n"
           "-q\n"
-          "   Quit hoops program.\n") {}
+          "   Quit hoops program.\n",
+          env) {}
 
 QuitCommand::~QuitCommand() {}
 

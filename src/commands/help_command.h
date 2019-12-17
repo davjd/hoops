@@ -7,10 +7,12 @@
 #include <vector>
 
 namespace hoops {
+class HoopsEnvironment;
+
 class HelpCommand : public Command {
  public:
   virtual ~HelpCommand() override;
-  HelpCommand();
+  HelpCommand(HoopsEnvironment* env);
   virtual bool IsValidCommand(const std::string &command) override;
   virtual bool Process(std::vector<std::string> arguments) override;
   virtual bool Process() override;

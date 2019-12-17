@@ -7,6 +7,7 @@
 #include "content_page.h"
 #include "env_namespace.h"
 #include "gumbo_scraper.h"
+#include "hoops_engine.h"
 #include "hoops_env.h"
 #include "loader.h"
 
@@ -30,33 +31,15 @@
 // draft steals of all time.
 
 int main() {
-  auto env =
-      std::make_unique<hoops::HoopsEnvironment>(new hoops::GumboScraper());
-  bool init_status = env->Init();
-  if (!init_status) {
-    std::cout << "Error initializing environment.\n";
-    return 0;
-  }
-  std::cout << "Finished: " << env->Alphabet() << "\n\n";
+  auto engine = std::make_unique<hoops::HoopsEngine>();
 
-  auto player = env->GetPlayer("Carmelo Anthony");
-  std::cout << "Getting content for " << player.GetFullName() << " with url "
-            << player.GetFullUrl() << "\n";
-  auto page =
-      new hoops::BBallReferencePage(env->GetPage(player), player.GetFullUrl());
-  auto g_scraper = static_cast<hoops::GumboScraper*>(env->scraper());
-  g_scraper->SetPage(page);
-  if (!g_scraper->FillPlayerMetadata(&player)) {
-    std::cout << "Error filling metadata.\n";
+  // Initialize the engine.
+  if (!engine->Start()) {
+    std::cout << "Error starting hoops program.\n";
+    return 1;
   }
 
-  if (!g_scraper->FillNumbers(&player)) {
-    std::cout << "Error filling metadata.\n";
-  }
-  std::cout << "file: "
-            << hoops::env::filename::ProfileFileName(player.GetFullUrl())
-            << "\n";
-
-  env->Run();
+  // Begin processing command inputs.
+  engine->Run();
   return 0;
 }

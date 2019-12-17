@@ -1,5 +1,5 @@
-#ifndef QUIT_COMMAND_H_
-#define QUIT_COMMAND_H_
+#ifndef FUN_COMMAND_H_
+#define FUN_COMMAND_H_
 
 #include "command.h"
 
@@ -9,10 +9,10 @@
 namespace hoops {
 class HoopsEnvironment;
 
-class QuitCommand : public Command {
+class FunCommand : public Command {
  public:
-  virtual ~QuitCommand() override;
-  QuitCommand(HoopsEnvironment* env);
+  virtual ~FunCommand() override;
+  FunCommand(HoopsEnvironment* env);
   virtual bool IsValidCommand(const std::string& command) override;
   virtual bool Process(std::vector<std::string> arguments) override;
   virtual bool Process() override;
@@ -20,4 +20,4 @@ class QuitCommand : public Command {
 
 }  // namespace hoops
 
-#endif  // QUIT_COMMAND_H_
+#endif  // FUN_COMMAND_H_

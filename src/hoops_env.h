@@ -2,18 +2,18 @@
 #define PROFILE_LOADER_H_
 
 #include <array>
+#include <memory>
 #include <string>
-#include "commands/command.h"
 #include "loader.h"
 #include "page_reader.h"
 #include "player_metadata.h"
-#include <memory>
 
 namespace hoops {
 
 class HoopsEnvironment {
  public:
-  ~HoopsEnvironment() {}
+  ~HoopsEnvironment();
+
   explicit HoopsEnvironment(PageReader* scraper);
 
   // Initialize the environment, such as reading and loading the pages.
@@ -35,37 +35,33 @@ class HoopsEnvironment {
   // Retrieve the PlayerMetadata object that is found in the map given a name.
   PlayerMetadata GetPlayer(const std::string& full_name);
 
-  // ill metadata for given player. Should be moved to more appropriate class.
+  // Fill metadata for given player. Should be moved to more appropriate class.
   void FillPlayerMetadata(PlayerMetadata& player);
 
   // Delete files that have index of players for all letters.
   bool RemoveIndexFiles();
 
+  // Retrieve the latest page we read into memory.
   ContentPage* CurrentPage();
 
+  // Returns scraper for parsing content.
   PageReader* scraper();
 
+  // Returns loader to do file processing.
   Loader* loader();
 
+  // For some reason the html table body is commented out before being rendered.
+  // Therefore, we must remove the comment symbols so it doesn't mess up the
+  // scraper.
   void FixPage(const PlayerMetadata& player);
 
+  // Helper for FixPage(player).
   void FixPage(const std::string& file_name);
-
-  bool RenameFile(const std::string& file_name);
-
-  std::string OldFileName(const std::string& file_name);
-
-  bool IsUsingOldName(const std::string& file_name);
 
   // Letters to be appended to url of player reference url.
   static const std::string kAlphabet;
 
   const std::string Alphabet();
-
-  static const std::array<std::unique_ptr<Command>, 3> kCommands;
-
-  bool Process(const std::string& line);
-  void Run();
 
  private:
   std::unique_ptr<PageReader> scraper_;
