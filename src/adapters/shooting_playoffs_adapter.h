@@ -14,8 +14,7 @@ class ShootingPlayoffsAdapter : public virtual ShootingAdapter {
       : ShootingAdapter(mutable_player) {}
   ~ShootingPlayoffsAdapter() {}
   ShootingPlayoffsAdapter() = default;
-  void AddAttribute(const std::string& attribute, std::string value) override;
-  void AddSeason() override;
+  void SetSeason() override;
 };
 
 }  // namespace hoops

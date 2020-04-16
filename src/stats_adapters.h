@@ -9,17 +9,17 @@ class CNode;
 namespace hoops {
 
 class PlayerMetadata;
-class AttributeAdapter;
+class AttributeInterface;
 
 class StatsAdapters {
  public:
   ~StatsAdapters();
   StatsAdapters();
-  AttributeAdapter* GetAdapter(const std::string& adapter_name);
+  AttributeInterface* GetAdapter(const std::string& adapter_name);
   void SetPlayer(PlayerMetadata* mutable_player);
 
   static const std::array<
-      std::pair<std::string, std::unique_ptr<AttributeAdapter> >, 17>
+      std::pair<std::string, std::unique_ptr<AttributeInterface> >, 17>
       kAttributeAdapters;
 };
 }  // namespace hoops

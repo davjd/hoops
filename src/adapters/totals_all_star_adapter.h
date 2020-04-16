@@ -14,8 +14,7 @@ class TotalsAllStarAdapter : public virtual TotalsAdapter {
       : TotalsAdapter(mutable_player) {}
   ~TotalsAllStarAdapter() {}
   TotalsAllStarAdapter() = default;
-  void AddAttribute(const std::string& attribute, std::string value) override;
-  void AddSeason() override;
+  void SetSeason() override;
 };
 
 }  // namespace hoops

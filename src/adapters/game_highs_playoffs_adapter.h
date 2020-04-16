@@ -14,8 +14,7 @@ class GameHighsPlayoffsAdapter : public virtual GameHighsAdapter {
       : GameHighsAdapter(mutable_player) {}
   ~GameHighsPlayoffsAdapter() {}
   GameHighsPlayoffsAdapter() = default;
-  void AddAttribute(const std::string& attribute, std::string value) override;
-  void AddSeason() override;
+  void SetSeason() override;
 };
 
 }  // namespace hoops

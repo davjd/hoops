@@ -1,18 +1,7 @@
-#include <functional>
+#include "hoops_engine.h"
+
 #include <iostream>
 #include <memory>
-#include <string>
-
-#include "bball_page.h"
-#include "content_page.h"
-#include "env_namespace.h"
-#include "gumbo_scraper.h"
-#include "hoops_engine.h"
-#include "hoops_env.h"
-#include "loader.h"
-
-#include "Document.h"
-#include "Node.h"
 
 // Usage:
 // -compare <type of season> <player_name> <player_name> .....

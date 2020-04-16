@@ -1,6 +1,6 @@
 #include "gumbo_scraper.h"
 
-#include "adapters/attribute_adapter.h"
+#include "adapters/attribute_interface.h"
 #include "util.h"
 
 #include <algorithm>
@@ -432,6 +432,10 @@ bool GumboScraper::FillNumbers(PlayerMetadata* mutable_player) {
       continue;
     }
 
+    // We also need to make sure that the season being modified by the adapter
+    // has been set with a player's metadata list.
+    adapter->SetSeason();
+
     // We got the header, now use the table to find the table rows with each
     // season stat line.
     CNode table_node = wrapper_sel.nodeAt(i);
@@ -456,7 +460,6 @@ bool GumboScraper::FillNumbers(PlayerMetadata* mutable_player) {
     }
 
     // Go through each row, as it will have the statline for a season.
-    // For testing purposes, we'll only add the first season.
     for (int i = 0; i < table_row_sel.nodeNum(); ++i) {
       auto row_node = table_row_sel.nodeAt(i);
       // Table header will have the season for this stat line.

@@ -14,8 +14,7 @@ class Per100PlayoffsAdapter : public virtual Per100Adapter {
       : Per100Adapter(mutable_player) {}
   ~Per100PlayoffsAdapter() {}
   Per100PlayoffsAdapter() = default;
-  void AddAttribute(const std::string& attribute, std::string value) override;
-  void AddSeason() override;
+  void SetSeason() override;
 };
 
 }  // namespace hoops

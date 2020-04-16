@@ -14,8 +14,7 @@ class PlayPlayoffsAdapter : public virtual PlayAdapter {
       : PlayAdapter(mutable_player) {}
   ~PlayPlayoffsAdapter() {}
   PlayPlayoffsAdapter() = default;
-  void AddAttribute(const std::string& attribute, std::string value) override;
-  void AddSeason() override;
+  void SetSeason() override;
 };
 
 }  // namespace hoops

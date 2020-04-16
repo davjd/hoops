@@ -6,9 +6,9 @@
 #include <string>
 
 #include "commands/command.h"
+#include "hoops_env.h"
 
 namespace hoops {
-class HoopsEnvironment;
 
 class HoopsEngine {
  public:

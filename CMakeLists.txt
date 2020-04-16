@@ -18,7 +18,8 @@ set(HEADER_FILES src/util.cpp
                  src/page_reader.h
                  src/player_extractor.h
                  src/player_metadata.cpp
-                 src/adapters/attribute_adapter.cpp
+                 src/adapters/attribute_interface.cpp
+                 src/adapters/attribute_adapter_impl.cpp
                  src/adapters/advanced_adapter.cpp
                  src/adapters/advanced_playoffs_adapter.cpp
                  src/adapters/per_36_adapter.cpp

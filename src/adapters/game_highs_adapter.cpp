@@ -1,86 +1,64 @@
 #include "game_highs_adapter.h"
 
-#include "player_metadata.h"
-#include "util.h"
-
 #include <iostream>
+#include "util.h"
 
 namespace hoops {
 
 void GameHighsAdapter::AddAttribute(const std::string& attribute,
                                     std::string value) {
-  if (player_->career_info.game_highs_seasons.empty()) return;
+  if (season()->empty()) return;
   if (attribute == "Season") {
-    player_->career_info.game_highs_seasons.back().season_info.season = value;
+    season()->back().season_info.season = value;
   } else if (attribute == "age") {
-    player_->career_info.game_highs_seasons.back().season_info.age =
-        int_or_negative(value);
+    season()->back().season_info.age = int_or_negative(value);
   } else if (attribute == "team_id") {
-    player_->career_info.game_highs_seasons.back().season_info.team = value;
+    season()->back().season_info.team = value;
   } else if (attribute == "lg_id") {
-    player_->career_info.game_highs_seasons.back().season_info.league = value;
+    season()->back().season_info.league = value;
   } else if (attribute == "mp") {
-    player_->career_info.game_highs_seasons.back().minutes_played = value;
+    season()->back().minutes_played = value;
   } else if (attribute == "fg") {
-    player_->career_info.game_highs_seasons.back().field_goals_made =
-        int_or_negative(value);
+    season()->back().field_goals_made = int_or_negative(value);
   } else if (attribute == "fga") {
-    player_->career_info.game_highs_seasons.back().field_goals_attempt =
-        int_or_negative(value);
+    season()->back().field_goals_attempt = int_or_negative(value);
   } else if (attribute == "fg3") {
-    player_->career_info.game_highs_seasons.back().three_points_made =
-        int_or_negative(value);
+    season()->back().three_points_made = int_or_negative(value);
   } else if (attribute == "fg3a") {
-    player_->career_info.game_highs_seasons.back().three_points_attempt =
-        int_or_negative(value);
+    season()->back().three_points_attempt = int_or_negative(value);
   } else if (attribute == "fg2") {
-    player_->career_info.game_highs_seasons.back().two_points_made =
-        int_or_negative(value);
+    season()->back().two_points_made = int_or_negative(value);
   } else if (attribute == "fg2a") {
-    player_->career_info.game_highs_seasons.back().two_points_attempt =
-        int_or_negative(value);
+    season()->back().two_points_attempt = int_or_negative(value);
   } else if (attribute == "ft") {
-    player_->career_info.game_highs_seasons.back().free_throws_made =
-        int_or_negative(value);
+    season()->back().free_throws_made = int_or_negative(value);
   } else if (attribute == "fta") {
-    player_->career_info.game_highs_seasons.back().free_throws_attempt =
-        int_or_negative(value);
+    season()->back().free_throws_attempt = int_or_negative(value);
   } else if (attribute == "orb") {
-    player_->career_info.game_highs_seasons.back().offensive_rebounds =
-        int_or_negative(value);
+    season()->back().offensive_rebounds = int_or_negative(value);
   } else if (attribute == "drb") {
-    player_->career_info.game_highs_seasons.back().defensive_rebounds =
-        int_or_negative(value);
+    season()->back().defensive_rebounds = int_or_negative(value);
   } else if (attribute == "trb") {
-    player_->career_info.game_highs_seasons.back().total_rebounds =
-        int_or_negative(value);
+    season()->back().total_rebounds = int_or_negative(value);
   } else if (attribute == "ast") {
-    player_->career_info.game_highs_seasons.back().assists =
-        int_or_negative(value);
+    season()->back().assists = int_or_negative(value);
   } else if (attribute == "stl") {
-    player_->career_info.game_highs_seasons.back().steals =
-        int_or_negative(value);
+    season()->back().steals = int_or_negative(value);
   } else if (attribute == "blk") {
-    player_->career_info.game_highs_seasons.back().blocks =
-        int_or_negative(value);
+    season()->back().blocks = int_or_negative(value);
   } else if (attribute == "tov") {
-    player_->career_info.game_highs_seasons.back().turnovers =
-        int_or_negative(value);
+    season()->back().turnovers = int_or_negative(value);
   } else if (attribute == "pf") {
-    player_->career_info.game_highs_seasons.back().personal_fouls =
-        int_or_negative(value);
+    season()->back().personal_fouls = int_or_negative(value);
   } else if (attribute == "pts") {
-    player_->career_info.game_highs_seasons.back().points =
-        int_or_negative(value);
+    season()->back().points = int_or_negative(value);
   } else if (attribute == "game_score") {
-    player_->career_info.game_highs_seasons.back().game_score =
-        float_or_negative(value);
+    season()->back().game_score = float_or_negative(value);
   }
 }
 
-void GameHighsAdapter::AddSeason() {
-  player_->career_info.game_highs_seasons.push_back(
-      PlayerMetadata::CareerInformation::GameHighsStatLine());
+void GameHighsAdapter::SetSeason() {
+  season_ = &player()->career_info.game_highs_seasons;
 }
 
 }  // namespace hoops

@@ -2,7 +2,7 @@
 
 #include "adapters/advanced_adapter.h"
 #include "adapters/advanced_playoffs_adapter.h"
-#include "adapters/attribute_adapter.h"
+#include "adapters/attribute_interface.h"
 #include "adapters/game_highs_adapter.h"
 #include "adapters/game_highs_playoffs_adapter.h"
 #include "adapters/per_100_adapter.h"
@@ -24,7 +24,8 @@
 namespace hoops {
 
 // TODO: Game Highs and Playoff Game Highs doesn't have an adapter currently.
-const std::array<std::pair<std::string, std::unique_ptr<AttributeAdapter> >, 17>
+const std::array<std::pair<std::string, std::unique_ptr<AttributeInterface> >,
+                 17>
     StatsAdapters::kAttributeAdapters = {
         {{"Per Game", std::make_unique<PerGameAdapter>()},
          {"Totals", std::make_unique<TotalsAdapter>()},
@@ -49,7 +50,7 @@ StatsAdapters::StatsAdapters() {}
 
 StatsAdapters::~StatsAdapters() {}
 
-AttributeAdapter* StatsAdapters::GetAdapter(const std::string& adapter_name) {
+AttributeInterface* StatsAdapters::GetAdapter(const std::string& adapter_name) {
   auto adapter =
       std::find_if(kAttributeAdapters.begin(), kAttributeAdapters.end(),
                    [&](auto& pair) { return pair.first == adapter_name; });
@@ -64,5 +65,4 @@ void StatsAdapters::SetPlayer(PlayerMetadata* mutable_player) {
     adapter.second->SetPlayer(mutable_player);
   }
 }
-
 }  // namespace hoops

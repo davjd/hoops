@@ -51,7 +51,7 @@ bool PullCommand::Process() {
 
 void PullCommand::OutputStatistics(const PlayerMetadata& player) {
   printf(
-      "\n-----------------\n%s(%s %s) has played in %i regular season(s) in "
+      "\n-----------------\n%s(%s %s) has played in %lu regular season(s) in "
       "the NBA.\n",
       player.id_info.legal_name.c_str(), player.id_info.first_name.c_str(),
       player.id_info.last_name.c_str(),
