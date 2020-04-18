@@ -92,7 +92,7 @@ void PullCommand::OutputStatistics(const PlayerMetadata& player) {
   auto* best_season = &player.career_info.per_game_seasons.front();
   float best_season_pts = 0;
   auto* worst_season = &player.career_info.per_game_seasons.front();
-  float worst_season_pts = 120;  // No one has scored this much (I think).
+  float worst_season_pts = 120;  // No one has scored this many points (I think).
   for (auto& season : player.career_info.per_game_seasons) {
     if (season.points > best_season->points) {
       best_season = &season;

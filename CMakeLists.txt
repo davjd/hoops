@@ -53,7 +53,6 @@ set(HEADER_FILES src/util.cpp
                  src/hoops_engine.cpp)
 
 include_directories(src/)
-
 add_library(gumboquery STATIC IMPORTED)
 set_property(TARGET gumboquery PROPERTY IMPORTED_LOCATION /Users/David/Git/gumbo-query/lib/libgumbo_query_static.a)
 #set_property(TARGET gumboquery PROPERTY IMPORTED_LOCATION lib/libgumbo_query_static_1.a)

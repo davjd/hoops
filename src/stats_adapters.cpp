@@ -23,7 +23,6 @@
 
 namespace hoops {
 
-// TODO: Game Highs and Playoff Game Highs doesn't have an adapter currently.
 const std::array<std::pair<std::string, std::unique_ptr<AttributeInterface> >,
                  17>
     StatsAdapters::kAttributeAdapters = {

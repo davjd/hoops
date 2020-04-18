@@ -7,8 +7,6 @@ namespace hoops {
 
 void PlayAdapter::AddAttribute(const std::string& attribute,
                                std::string value) {
-  // TODO: Update this adapter with correct member variables (including last
-  // two).
   if (season()->empty()) return;
   if (attribute == "Season") {
     season()->back().season_info.season = value;

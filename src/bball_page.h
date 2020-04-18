@@ -36,6 +36,10 @@ class BBallReferencePage : public ContentPage {
   PageType GetPageType();
   PageType page_type() { return page_type_; }
 
+  static bool IsProfilePage(PageType page_type);
+
+  static bool IsIndexPage(PageType page_type);
+
  private:
   PageType page_type_;
   const std::string current_url_;

@@ -37,7 +37,6 @@ AttributeAdapterImpl<T>::season() {
 template <typename T>
 void AttributeAdapterImpl<T>::set_season(
     AttributeAdapterImpl<T>::SeasonType* season) {
-  // player_->career_info.advanced_seasons
   season_ = season;
 }
 

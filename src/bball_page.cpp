@@ -89,4 +89,12 @@ BBallReferencePage::PageType BBallReferencePage::GetPageType() {
 
 std::string BBallReferencePage::Url() { return current_url_; }
 
+bool BBallReferencePage::IsProfilePage(PageType page_type) {
+  return page_type == PageType::kProfilePage;
+}
+
+bool BBallReferencePage::IsIndexPage(PageType page_type) {
+  return page_type == PageType::kIndexPage;
+}
+
 }  // namespace hoops

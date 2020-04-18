@@ -45,8 +45,7 @@ bool GumboScraper::IsEmpty() { return !scraper_->isInitialized(); }
 
 std::string GumboScraper::GetPlayerNames() {
   std::string result = "";
-  if (IsEmpty() || page_type() != BBallReferencePage::PageType::kIndexPage)
-    return result;
+  if (IsEmpty() || !BBallReferencePage::IsIndexPage(page_type())) return result;
   CSelection selection = scraper_->find("table#players tbody");
   if (selection.nodeNum() == 0) return "";
 
@@ -67,7 +66,7 @@ std::string GumboScraper::GetPlayerNames() {
 
 std::vector<PlayerMetadata> GumboScraper::GetPlayers() {
   std::vector<PlayerMetadata> players;
-  if (IsEmpty() || page_type() != BBallReferencePage::PageType::kIndexPage)
+  if (IsEmpty() || !BBallReferencePage::IsIndexPage(page_type()))
     return players;
   CSelection sel = scraper_->find("table#players tbody");
   if (sel.nodeNum() == 0) {
@@ -110,7 +109,7 @@ std::vector<PlayerMetadata> GumboScraper::GetPlayers() {
 
 PlayerMetadata GumboScraper::GetPlayer(const std::string& player_name) {
   PlayerMetadata player;
-  if (IsEmpty() || page_type() != BBallReferencePage::PageType::kProfilePage)
+  if (IsEmpty() || !BBallReferencePage::IsProfilePage(page_type()))
     return player;
   CSelection sel = scraper_->find("table#players tbody");
   if (sel.nodeNum() == 0) {
@@ -155,7 +154,7 @@ PlayerMetadata GumboScraper::GetPlayer(const std::string& player_name) {
 }
 
 bool GumboScraper::FillPlayerMetadata(PlayerMetadata* mutable_player) {
-  if (page_type() != BBallReferencePage::PageType::kProfilePage) {
+  if (!BBallReferencePage::IsProfilePage(page_type())) {
     return false;
   }
   CSelection sel = scraper_->find("div.players");
@@ -395,7 +394,7 @@ void GumboScraper::FillStatsData(PlayerMetadata* mutable_player,
 }
 
 bool GumboScraper::FillNumbers(PlayerMetadata* mutable_player) {
-  if (page_type() != BBallReferencePage::PageType::kProfilePage) {
+  if (!BBallReferencePage::IsProfilePage(page_type())) {
     return false;
   }
 
@@ -441,7 +440,6 @@ bool GumboScraper::FillNumbers(PlayerMetadata* mutable_player) {
     CNode table_node = wrapper_sel.nodeAt(i);
     // table_node.attribute("id") contains the type of stat.
 
-    // TODO: Could encapsulate the header to get the correct query.
     std::string table_query;
     if (section_header.find("Game Highs") != std::string::npos) {
       table_query =
