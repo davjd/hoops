@@ -43,6 +43,7 @@ set(HEADER_FILES src/util.cpp
                  src/meta_section_parser.cpp
                  src/scraper_wrapper.cpp
                  src/gumbo_scraper.cpp
+                 src/models/input_command.cpp
                  src/commands/command.cpp
                  src/commands/help_command.cpp
                  src/commands/pull_command.cpp

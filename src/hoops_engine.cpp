@@ -30,31 +30,24 @@ bool HoopsEngine::Start() {
   return env_->Init();
 }
 
-bool HoopsEngine::Process(const std::string& line) {
-  std::vector<std::string> command_vector = split(line, " ");
-  const std::string input_command = command_vector.at(0);
-  bool found = false;
+bool HoopsEngine::Process(InputCommand* input_command) {
+  // TODO: We should let the command handlers handle the state of input_command instead of this method.
+  const std::string main_command = input_command->MainCommand();
   for (auto& command : kCommands) {
     // Find the correct handler for this command.
-    if (command->IsValidCommand(input_command)) {
-      found = true;
-      // Remove the command name and pass the rest of the arguments.
-      command_vector.erase(command_vector.begin());
-      bool quit = false;
+    if (command->IsValidCommand(main_command)) {
+      auto command_list = input_command->GetArguments();
+      input_command->Processed();
 
-      // The handler will tell us whether there was a failure or whether we
-      // need to quit by returning false.
-      if (command_vector.size() == 0) {
-        quit = !command->Process();
-      } else {
-        quit = !command->Process(command_vector);
-      }
-      if (quit) {
-        return false;
-      }
+      // We'll quit processing commands if a command requests it.
+      // TODO: This logic is redundunt and probably not needed.
+      bool quit_requested = command_list.empty() ? !command->Process() : !command->Process(command_list);
+      if (quit_requested) return false;
     }
   }
-  if (!found) {
+  // If we couldn't process the command, output the help message.
+  if (!input_command->was_processed()) {
+    std::cout << "Couldn't process input..\n";
     std::cout << kCommands.at(0)->usage_message();
   }
   return true;
@@ -63,7 +56,9 @@ bool HoopsEngine::Process(const std::string& line) {
 void HoopsEngine::Run() {
   std::string line;
   while (std::getline(std::cin, line)) {
-    if (!Process(line)) {
+    auto input_command = std::make_unique<InputCommand>(line);
+    // TODO: We can now do input_command->WasProcessed() inside here to quit.
+    if (!Process(input_command.get())) {
       break;
     }
   }

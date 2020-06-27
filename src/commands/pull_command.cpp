@@ -25,7 +25,7 @@ bool PullCommand::Process(std::vector<std::string> arguments) {
   if (arguments.size() == 0) {
     std::cout << usage_message();
   } else {
-    const std::string full_name = collapse_vector(arguments);
+    const std::string& full_name = collapse_vector(arguments);
     auto player = env()->GetPlayer(full_name);
     if (player.id_info.last_name.empty()) {
       // If the name is empty, it's most likely invalid.

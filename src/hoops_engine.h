@@ -7,6 +7,7 @@
 
 #include "commands/command.h"
 #include "hoops_env.h"
+#include "models/input_command.h"
 
 namespace hoops {
 
@@ -19,7 +20,7 @@ class HoopsEngine {
   bool Start();
 
   // Procces the given command input.
-  bool Process(const std::string& line);
+  bool Process(InputCommand* input_command);
 
   // Continously ask for input from the user and process input.
   void Run();
