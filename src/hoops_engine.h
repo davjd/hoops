@@ -20,7 +20,7 @@ class HoopsEngine {
   bool Start();
 
   // Procces the given command input.
-  bool Process(InputCommand* input_command);
+  void Process(InputCommand* input_command);
 
   // Continously ask for input from the user and process input.
   void Run();

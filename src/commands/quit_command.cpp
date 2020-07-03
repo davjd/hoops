@@ -2,6 +2,7 @@
 
 #include <iostream>
 #include "hoops_env.h"
+#include "models/input_command.h"
 
 namespace hoops {
 
@@ -19,11 +20,10 @@ bool QuitCommand::IsValidCommand(const std::string& command) {
 }
 
 // Help command won't take arguments, so output help message.
-bool QuitCommand::Process(std::vector<std::string> arguments) {
+void QuitCommand::Process(std::vector<std::string> arguments) {
   std::cout << usage_message();
-  return true;
 }
 
-bool QuitCommand::Process() { return false; }
+void QuitCommand::Process() { current_command()->RequestQuit(); }
 
 }  // namespace hoops

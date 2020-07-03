@@ -14,8 +14,10 @@ class CompareCommand : public Command {
   virtual ~CompareCommand() override;
   CompareCommand(HoopsEnvironment* env);
   virtual bool IsValidCommand(const std::string& command) override;
-  virtual bool Process(std::vector<std::string> arguments) override;
-  virtual bool Process() override;
+
+ protected:
+  virtual void Process(std::vector<std::string> arguments) override;
+  virtual void Process() override;
 };
 
 }  // namespace hoops

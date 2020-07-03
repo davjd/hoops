@@ -33,14 +33,21 @@ class InputCommand {
   // Return the input line without the main command (leaving the arguments).
   std::vector<std::string> GetArguments();
 
+  // Returns whether the current input command has no arguments.
+  bool NoArguments();
+
  private:
   bool quit_requested_;
   bool was_processed_;
+  bool found_no_args_;
   const std::string command_line_;
   const std::string command_handler_;
 
   // Helper method to get the main command from the command line passed.
   std::string FindMainCommand(const std::string& command_line);
+
+  // Returns whether this input command has no arguments.
+  bool HasNoArguments(const std::string& command_line);
 };
 
 }  // namespace hoops

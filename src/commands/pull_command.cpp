@@ -21,7 +21,7 @@ bool PullCommand::IsValidCommand(const std::string& command) {
 }
 
 // Help command won't take arguments.
-bool PullCommand::Process(std::vector<std::string> arguments) {
+void PullCommand::Process(std::vector<std::string> arguments) {
   if (arguments.size() == 0) {
     std::cout << usage_message();
   } else {
@@ -30,7 +30,7 @@ bool PullCommand::Process(std::vector<std::string> arguments) {
     if (player.id_info.last_name.empty()) {
       // If the name is empty, it's most likely invalid.
       std::cout << "Couldn't find given player.\n";
-      return true;
+      return;
     }
     std::cout << "Getting " << player.GetFullName() << "\n";
     if (!env()->FillAllStats(&player)) {
@@ -41,13 +41,9 @@ bool PullCommand::Process(std::vector<std::string> arguments) {
       OutputStatistics(player);
     }
   }
-  return true;
 }
 
-bool PullCommand::Process() {
-  std::cout << usage_message();
-  return true;
-}
+void PullCommand::Process() { std::cout << usage_message(); }
 
 void PullCommand::OutputStatistics(const PlayerMetadata& player) {
   printf(
@@ -92,7 +88,8 @@ void PullCommand::OutputStatistics(const PlayerMetadata& player) {
   auto* best_season = &player.career_info.per_game_seasons.front();
   float best_season_pts = 0;
   auto* worst_season = &player.career_info.per_game_seasons.front();
-  float worst_season_pts = 120;  // No one has scored this many points (I think).
+  float worst_season_pts =
+      120;  // No one has scored this many points (I think).
   for (auto& season : player.career_info.per_game_seasons) {
     if (season.points > best_season->points) {
       best_season = &season;

@@ -15,8 +15,10 @@ class PullCommand : public Command {
   virtual ~PullCommand() override;
   PullCommand(HoopsEnvironment* env);
   virtual bool IsValidCommand(const std::string& command) override;
-  virtual bool Process(std::vector<std::string> arguments) override;
-  virtual bool Process() override;
+
+ protected:
+  virtual void Process(std::vector<std::string> arguments) override;
+  virtual void Process() override;
 
  private:
   void OutputStatistics(const PlayerMetadata& player);

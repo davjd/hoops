@@ -18,14 +18,10 @@ bool CompareCommand::IsValidCommand(const std::string& command) {
   return command == "-cmp" || command == "-compare" || command == "-c";
 }
 
-bool CompareCommand::Process(std::vector<std::string> arguments) {
+void CompareCommand::Process(std::vector<std::string> arguments) {
   std::cout << usage_message();
-  return true;
 }
 
-bool CompareCommand::Process() {
-  std::cout << usage_message();
-  return true;
-}
+void CompareCommand::Process() { std::cout << usage_message(); }
 
 }  // namespace hoops

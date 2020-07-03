@@ -18,14 +18,10 @@ bool FunCommand::IsValidCommand(const std::string& command) {
   return command == "-fun" || command == "-f";
 }
 
-bool FunCommand::Process(std::vector<std::string> arguments) {
+void FunCommand::Process(std::vector<std::string> arguments) {
   std::cout << usage_message();
-  return true;
 }
 
-bool FunCommand::Process() {
-  std::cout << usage_message();
-  return true;
-}
+void FunCommand::Process() { std::cout << usage_message(); }
 
 }  // namespace hoops

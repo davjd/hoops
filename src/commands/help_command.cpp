@@ -27,14 +27,10 @@ bool HelpCommand::IsValidCommand(const std::string& command) {
 }
 
 // Help command won't take arguments.
-bool HelpCommand::Process(std::vector<std::string> arguments) {
+void HelpCommand::Process(std::vector<std::string> arguments) {
   std::cout << usage_message();
-  return true;
 }
 
-bool HelpCommand::Process() {
-  std::cout << usage_message();
-  return true;
-}
+void HelpCommand::Process() { std::cout << usage_message(); }
 
 }  // namespace hoops

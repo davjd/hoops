@@ -49,7 +49,6 @@ class GumboScraper : public ScraperWrapper<CDocument>, public PlayerExtractor {
  private:
   std::unique_ptr<MetaSectionParser> meta_parser_;
   std::unique_ptr<StatsAdapters> adapters_;
-
 };
 
 }  // namespace hoops
