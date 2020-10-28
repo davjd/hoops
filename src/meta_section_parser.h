@@ -17,24 +17,7 @@ class MetaSectionParser {
   using ParseFunctor = std::function<void(CNode*, PlayerMetadata*)>;
   ~MetaSectionParser();
   MetaSectionParser();
-  bool Parse(CNode* node, const std::string& tag);
-
-  std::string ParsePronunciation(std::string text);
-  std::string ParsePosition(std::string text);
-  std::string ParseShoots(std::string text);
-  std::string ParseBorn(std::string text);
-  std::string ParseCollege(std::string text);
-  std::string ParseHighSchool(std::string text);
-  std::string ParseDraft(std::string text);
-  std::string ParseNBADebut(std::string text);
-  std::string ParseHallofFame(std::string text);
-  std::string ParseExperience(std::string text);
-  std::string ParseRecruitingRank(std::string text);
-  void ParseTag(const std::string& tag);
   ParseFunctor GetParseFunction(const std::string& tag);
-
-  static const std::array<std::pair<std::string, ParseFunctor>, 12>
-      kParseFunctions;
 
  private:
   std::vector<std::string> meta_labels;
@@ -49,6 +32,9 @@ class MetaSectionParser {
   static const std::string kHallofFameTag;
   static const std::string kExperienceTag;
   static const std::string kRecruitingRankTag;
+
+  static const std::array<std::pair<std::string, ParseFunctor>, 12>
+      kParseFunctions;
 };
 }  // namespace hoops
 #endif  // META_SECTION_PARSER_H_

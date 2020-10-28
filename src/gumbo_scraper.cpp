@@ -34,13 +34,11 @@ void GumboScraper::SetPage(ContentPage* page) {
   if (content_copy.size() != 0) scraper_->parse(content_copy);
 }
 
-// Gets <body> tag of HTML page.
 std::string GumboScraper::GetBody() {
   if (IsEmpty()) return "";
   return CurrentPage()->content();
 }
 
-// Checks if current page is empty.
 bool GumboScraper::IsEmpty() { return !scraper_->isInitialized(); }
 
 std::string GumboScraper::GetPlayerNames() {
@@ -193,34 +191,6 @@ CNode GetNodeThatContains(CSelection selection, const std::string& element,
     return label_sel.nodeAt(0);
   }
   return CNode();
-}
-
-CNode GetNodeThatContains(CNode node, const std::string& element,
-                          const std::string query) {
-  CSelection label_sel = node.find(element + ":contains('" + query + "')");
-  if (label_sel.nodeNum() != 0) {
-    return label_sel.nodeAt(0);
-  }
-  return CNode();
-}
-
-// Ignoring nodes of element tag, get the text of sibilings for a given node
-// (including the node's text).
-std::string GetSibilingTextIgnoring(CNode node, const std::string& tag) {
-  std::string full_text = "";
-  if (!node.valid()) return full_text;
-  CNode sib = node.nextSibling();
-  if (!sib.valid()) {
-    std::cout << "No sibilings...\n";
-    return "";
-  }
-
-  for (; sib.valid() && sib.tag() != tag; sib = sib.nextSibling()) {
-    std::string sib_text = sib.text();
-    if (sib_text.empty()) continue;
-    full_text += "<" + sib.tag() + ">" + sib_text + "\n";
-  }
-  return full_text;
 }
 
 void GumboScraper::FillMetaSection(PlayerMetadata* player, CNode meta_section) {

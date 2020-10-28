@@ -52,10 +52,6 @@ const std::array<std::pair<std::string, MetaSectionParser::ParseFunctor>, 12>
           [](CNode* node, PlayerMetadata* mutable_player) {
             if (!node->valid()) return;
             CSelection span_sel = node->parent().find("p > span");
-
-            // nobr tag isn't fetched by CURL for some reason, so we'll manually
-            // calculate days age.
-
             CSelection age_span_sel = span_sel.find("span:contains('Age')");
             if (age_span_sel.nodeNum() == 1) {
               mutable_player->AddAttribute("age",
@@ -228,44 +224,6 @@ MetaSectionParser::ParseFunctor MetaSectionParser::GetParseFunction(
     return tag_parser->second;
   }
   return {};
-}
-
-bool MetaSectionParser::Parse(CNode* node, const std::string& tag) {
-  return true;
-}
-void MetaSectionParser::ParseTag(const std::string& tag) {
-  // auto tag_parser =
-  //     std::find(kParseFunctions.begin(), kParseFunctions.end(), tag);
-  // if (tag_parser != kParseFunctions.end()) {
-  //   // tag_parser.second();
-  // }
-}
-
-std::string MetaSectionParser::ParsePronunciation(std::string text) {
-  return "";
-}
-
-std::string MetaSectionParser::ParsePosition(std::string text) { return ""; }
-
-std::string MetaSectionParser::ParseShoots(std::string text) {
-  text.erase(std::remove_if(text.begin(), text.end(),
-                            [](unsigned char c) { return std::isspace(c); }),
-             text.end());
-  return text;
-}
-std::string MetaSectionParser::ParseBorn(std::string text) { return ""; }
-std::string MetaSectionParser::ParseCollege(std::string text) { return ""; }
-std::string MetaSectionParser::ParseHighSchool(std::string text) { return ""; }
-std::string MetaSectionParser::ParseDraft(std::string text) { return ""; }
-
-std::string MetaSectionParser::ParseNBADebut(std::string text) { return ""; }
-
-std::string MetaSectionParser::ParseHallofFame(std::string text) { return ""; }
-
-std::string MetaSectionParser::ParseExperience(std::string text) { return ""; }
-
-std::string MetaSectionParser::ParseRecruitingRank(std::string text) {
-  return "";
 }
 
 const std::string MetaSectionParser::kPronunciationTag = "Pronunciation";
